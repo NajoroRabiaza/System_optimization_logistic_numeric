@@ -1,8 +1,104 @@
 {% extends "interface/base.html" %}
 
-{% block title %}Accueil - Logistics Optimizer{% endblock %}
+{% block title %}Accueil — Logistics Optimizer{% endblock %}
 
 {% block content %}
     <h1>Logistics Optimizer</h1>
-    <p>Application en cours de constructions.</p>
+    <p>Saisissez les données du problème puis lancez l'optimisation.</p>
+
+    <form method="post" action="{% url 'interface:resultats' %}">
+        {% csrf_token %}
+
+        <h2>Demandes par région</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Région</th>
+                    <th>Nombre de requêtes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>R1</td>
+                    <td><input type="number" name="demande_R1" value="1200" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>R2</td>
+                    <td><input type="number" name="demande_R2" value="900" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>R3</td>
+                    <td><input type="number" name="demande_R3" value="700" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>R4</td>
+                    <td><input type="number" name="demande_R4" value="600" min="0" required></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Capacités des centres</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Centre</th>
+                    <th>Capacité maximale</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>C1</td>
+                    <td><input type="number" name="capacite_C1" value="1500" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>C2</td>
+                    <td><input type="number" name="capacite_C2" value="1200" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>C3</td>
+                    <td><input type="number" name="capacite_C3" value="1000" min="0" required></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Coûts unitaires de traitement</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Centre</th>
+                    <th>R1</th>
+                    <th>R2</th>
+                    <th>R3</th>
+                    <th>R4</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>C1</td>
+                    <td><input type="number" name="cout_C1_R1" value="5" min="0" required></td>
+                    <td><input type="number" name="cout_C1_R2" value="6" min="0" required></td>
+                    <td><input type="number" name="cout_C1_R3" value="7" min="0" required></td>
+                    <td><input type="number" name="cout_C1_R4" value="8" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>C2</td>
+                    <td><input type="number" name="cout_C2_R1" value="4" min="0" required></td>
+                    <td><input type="number" name="cout_C2_R2" value="5" min="0" required></td>
+                    <td><input type="number" name="cout_C2_R3" value="6" min="0" required></td>
+                    <td><input type="number" name="cout_C2_R4" value="7" min="0" required></td>
+                </tr>
+                <tr>
+                    <td>C3</td>
+                    <td><input type="number" name="cout_C3_R1" value="6" min="0" required></td>
+                    <td><input type="number" name="cout_C3_R2" value="4" min="0" required></td>
+                    <td><input type="number" name="cout_C3_R3" value="5" min="0" required></td>
+                    <td><input type="number" name="cout_C3_R4" value="6" min="0" required></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+        <button type="submit">Lancer l'optimisation</button>
+
+    </form>
 {% endblock %}

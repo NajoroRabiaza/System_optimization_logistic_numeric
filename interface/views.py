@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def index(request):
@@ -6,6 +6,8 @@ def index(request):
 
 
 def resultats(request):
+    if request.method != 'POST':
+        return redirect('interface:index')
     return render(request, 'interface/resultats.html')
 
 
