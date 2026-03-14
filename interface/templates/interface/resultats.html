@@ -5,11 +5,19 @@
 {% block content %}
 <h1>Résultats de l'optimisation</h1>
 
-<p>Statut : <strong>{{ resultats.statut }}</strong></p>
-<p>Coût total optimal : <strong>{{ resultats.cout_total }}</strong> unités</p>
+<div class="resultats-resume">
+    <div class="resume-carte">
+        <div class="resume-label">Statut</div>
+        <div class="resume-valeur statut-optimal">{{ resultats.statut }}</div>
+    </div>
+    <div class="resume-carte">
+        <div class="resume-label">Coût total optimal</div>
+        <div class="resume-valeur">{{ resultats.cout_total }} unités</div>
+    </div>
+</div>
 
 <h2>Répartition des flux</h2>
-<table border="1" cellpadding="6">
+<table>
     <tr>
         <th>Région</th>
         <th>Centre</th>
@@ -25,22 +33,26 @@
 </table>
 
 <h2>Utilisation des centres</h2>
-<table border="1" cellpadding="6">
-    <tr>
-        <th>Centre</th>
-        <th>Charge</th>
-        <th>Capacité max</th>
-        <th>Utilisation</th>
-    </tr>
+<div class="utilisation-liste">
     {% for ligne in resultats.utilisation %}
-    <tr>
-        <td>{{ ligne.centre }}</td>
-        <td>{{ ligne.charge }}</td>
-        <td>{{ ligne.capacite }}</td>
-        <td>{{ ligne.pourcentage }} %</td>
-    </tr>
+    <div class="utilisation-bloc">
+        <div class="utilisation-header">
+            <span class="utilisation-nom">{{ ligne.centre }}</span>
+            <span class="utilisation-chiffres">{{ ligne.charge }} / {{ ligne.capacite }} requêtes</span>
+            <span class="utilisation-pct">{{ ligne.pourcentage }}%</span>
+        </div>
+        <div class="barre-fond">
+            {% if ligne.pourcentage >= 90 %}
+            <div class="barre-remplissage barre-rouge" style="width: {{ ligne.pourcentage }}%;"></div>
+            {% elif ligne.pourcentage >= 70 %}
+            <div class="barre-remplissage barre-orange" style="width: {{ ligne.pourcentage }}%;"></div>
+            {% else %}
+            <div class="barre-remplissage barre-verte" style="width: {{ ligne.pourcentage }}%;"></div>
+            {% endif %}
+        </div>
+    </div>
     {% endfor %}
-</table>
+</div>
 
 <br>
 <a href="{% url 'interface:index' %}">Retour à l'accueil</a>
