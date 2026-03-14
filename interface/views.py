@@ -19,26 +19,35 @@ def index(request):
 
 
 def resultats(request):
-    # Fausses données pour construire l'affichage
-    # Ces valeurs seront remplacées par la vraie solution du solveur plus tard
-    resultats_fictifs = {
-        'cout_total': 19400,
-        'statut': 'Optimal',
-        'flux': [
-            {'region': 'R1', 'centre': 'C1', 'quantite': 600},
-            {'region': 'R1', 'centre': 'C2', 'quantite': 600},
-            {'region': 'R2', 'centre': 'C2', 'quantite': 600},
-            {'region': 'R2', 'centre': 'C3', 'quantite': 300},
-            {'region': 'R3', 'centre': 'C3', 'quantite': 700},
-            {'region': 'R4', 'centre': 'C1', 'quantite': 600},
-        ],
-        'utilisation': [
-            {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
-            {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
-            {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
-        ],
-    }
-    return render(request, 'interface/resultats.html', {'resultats': resultats_fictifs})
+    if request.method == 'POST':
+        form = DonneesForm(request.POST)
+        if form.is_valid():
+            # Fausses données pour l'instant
+            resultats_fictifs = {
+                'cout_total': 19400,
+                'statut': 'Optimal',
+                'flux': [
+                    {'region': 'R1', 'centre': 'C1', 'quantite': 600},
+                    {'region': 'R1', 'centre': 'C2', 'quantite': 600},
+                    {'region': 'R2', 'centre': 'C2', 'quantite': 600},
+                    {'region': 'R2', 'centre': 'C3', 'quantite': 300},
+                    {'region': 'R3', 'centre': 'C3', 'quantite': 700},
+                    {'region': 'R4', 'centre': 'C1', 'quantite': 600},
+                ],
+                'utilisation': [
+                    {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
+                    {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
+                    {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
+                ],
+            }
+            return render(request, 'interface/resultats.html', {'resultats': resultats_fictifs})
+        else:
+            # Formulaire invalide : on retourne à l'accueil avec les erreurs
+            return render(request, 'interface/index.html', {'form': form})
+
+    # Si quelqu'un accède à /resultats/ directement sans passer par le formulaire
+    form = DonneesForm()
+    return render(request, 'interface/index.html', {'form': form})
 
 
 def scenarios(request):

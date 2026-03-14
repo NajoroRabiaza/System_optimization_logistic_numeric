@@ -6,6 +6,10 @@
 <h1>Logistics Optimizer</h1>
 <p>Saisissez les données du problème puis lancez l'optimisation.</p>
 
+{% if form.errors %}
+<p class="error-global">Le formulaire contient des erreurs. Veuillez les corriger.</p>
+{% endif %}
+
 <form method="post" action="{% url 'interface:resultats' %}">
     {% csrf_token %}
 
@@ -18,10 +22,30 @@
             <th>R4</th>
         </tr>
         <tr>
-            <td>{{ form.demande_R1 }}</td>
-            <td>{{ form.demande_R2 }}</td>
-            <td>{{ form.demande_R3 }}</td>
-            <td>{{ form.demande_R4 }}</td>
+            <td>
+                {{ form.demande_R1 }}
+                {% if form.demande_R1.errors %}
+                <div class="error">{{ form.demande_R1.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                {{ form.demande_R2 }}
+                {% if form.demande_R2.errors %}
+                <div class="error">{{ form.demande_R2.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                {{ form.demande_R3 }}
+                {% if form.demande_R3.errors %}
+                <div class="error">{{ form.demande_R3.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                {{ form.demande_R4 }}
+                {% if form.demande_R4.errors %}
+                <div class="error">{{ form.demande_R4.errors }}</div>
+                {% endif %}
+            </td>
         </tr>
     </table>
 
@@ -33,9 +57,24 @@
             <th>C3</th>
         </tr>
         <tr>
-            <td>{{ form.capacite_C1 }}</td>
-            <td>{{ form.capacite_C2 }}</td>
-            <td>{{ form.capacite_C3 }}</td>
+            <td>
+                {{ form.capacite_C1 }}
+                {% if form.capacite_C1.errors %}
+                <div class="error">{{ form.capacite_C1.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                {{ form.capacite_C2 }}
+                {% if form.capacite_C2.errors %}
+                <div class="error">{{ form.capacite_C2.errors }}</div>
+                {% endif %}
+            </td>
+            <td>
+                {{ form.capacite_C3 }}
+                {% if form.capacite_C3.errors %}
+                <div class="error">{{ form.capacite_C3.errors }}</div>
+                {% endif %}
+            </td>
         </tr>
     </table>
 
@@ -50,24 +89,24 @@
         </tr>
         <tr>
             <th>C1</th>
-            <td>{{ form.cout_C1_R1 }}</td>
-            <td>{{ form.cout_C1_R2 }}</td>
-            <td>{{ form.cout_C1_R3 }}</td>
-            <td>{{ form.cout_C1_R4 }}</td>
+            <td>{{ form.cout_C1_R1 }}{% if form.cout_C1_R1.errors %}<div class="error">{{ form.cout_C1_R1.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C1_R2 }}{% if form.cout_C1_R2.errors %}<div class="error">{{ form.cout_C1_R2.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C1_R3 }}{% if form.cout_C1_R3.errors %}<div class="error">{{ form.cout_C1_R3.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C1_R4 }}{% if form.cout_C1_R4.errors %}<div class="error">{{ form.cout_C1_R4.errors }}</div>{% endif %}</td>
         </tr>
         <tr>
             <th>C2</th>
-            <td>{{ form.cout_C2_R1 }}</td>
-            <td>{{ form.cout_C2_R2 }}</td>
-            <td>{{ form.cout_C2_R3 }}</td>
-            <td>{{ form.cout_C2_R4 }}</td>
+            <td>{{ form.cout_C2_R1 }}{% if form.cout_C2_R1.errors %}<div class="error">{{ form.cout_C2_R1.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C2_R2 }}{% if form.cout_C2_R2.errors %}<div class="error">{{ form.cout_C2_R2.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C2_R3 }}{% if form.cout_C2_R3.errors %}<div class="error">{{ form.cout_C2_R3.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C2_R4 }}{% if form.cout_C2_R4.errors %}<div class="error">{{ form.cout_C2_R4.errors }}</div>{% endif %}</td>
         </tr>
         <tr>
             <th>C3</th>
-            <td>{{ form.cout_C3_R1 }}</td>
-            <td>{{ form.cout_C3_R2 }}</td>
-            <td>{{ form.cout_C3_R3 }}</td>
-            <td>{{ form.cout_C3_R4 }}</td>
+            <td>{{ form.cout_C3_R1 }}{% if form.cout_C3_R1.errors %}<div class="error">{{ form.cout_C3_R1.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C3_R2 }}{% if form.cout_C3_R2.errors %}<div class="error">{{ form.cout_C3_R2.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C3_R3 }}{% if form.cout_C3_R3.errors %}<div class="error">{{ form.cout_C3_R3.errors }}</div>{% endif %}</td>
+            <td>{{ form.cout_C3_R4 }}{% if form.cout_C3_R4.errors %}<div class="error">{{ form.cout_C3_R4.errors }}</div>{% endif %}</td>
         </tr>
     </table>
 

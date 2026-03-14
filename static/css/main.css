@@ -121,3 +121,19 @@ footer {
     color: #888;
     border-top: 1px solid #ddd;
 }
+
+/* Messages d'erreur */
+.error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.error-global {
+    background-color: #fde8e8;
+    border: 1px solid #e74c3c;
+    color: #e74c3c;
+    padding: 10px 16px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
