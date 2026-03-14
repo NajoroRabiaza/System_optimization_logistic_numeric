@@ -301,3 +301,49 @@ footer {
 .barre-rouge {
     background-color: #e74c3c;
 }
+
+
+/* Résumé de saisie */
+.resume-saisie {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.resume-saisie-grille {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+}
+
+.resume-saisie-bloc {
+    flex: 1;
+    text-align: center;
+    padding: 14px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+.resume-saisie-titre {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.resume-saisie-valeur {
+    font-size: 28px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.resume-saisie-detail {
+    font-size: 12px;
+    color: #aaa;
+}

@@ -110,8 +110,80 @@
         </tr>
     </table>
 
-    <br>
+    <div class="resume-saisie">
+        <h2>Résumé des données</h2>
+        <div class="resume-saisie-grille">
+            <div class="resume-saisie-bloc">
+                <div class="resume-saisie-titre">Demande totale</div>
+                <div class="resume-saisie-valeur" id="demande-totale">—</div>
+                <div class="resume-saisie-detail">requêtes à distribuer</div>
+            </div>
+            <div class="resume-saisie-bloc">
+                <div class="resume-saisie-titre">Capacité totale</div>
+                <div class="resume-saisie-valeur" id="capacite-totale">—</div>
+                <div class="resume-saisie-detail">places disponibles</div>
+            </div>
+            <div class="resume-saisie-bloc">
+                <div class="resume-saisie-titre">Marge disponible</div>
+                <div class="resume-saisie-valeur" id="marge">—</div>
+                <div class="resume-saisie-detail">capacité excédentaire</div>
+            </div>
+        </div>
+    </div>
+
     <button type="submit">Lancer l'optimisation</button>
 
 </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Champs de demande
+    const champsdemande = [
+        'id_demande_R1', 'id_demande_R2',
+        'id_demande_R3', 'id_demande_R4'
+    ];
+
+    // Champs de capacité
+    const champsCapacite = [
+        'id_capacite_C1', 'id_capacite_C2', 'id_capacite_C3'
+    ];
+
+    function calculerResume() {
+        let demandeTotale = 0;
+        let capaciteTotale = 0;
+
+        champsdemande.forEach(function(id) {
+            const valeur = parseInt(document.getElementById(id).value) || 0;
+            demandeTotale += valeur;
+        });
+
+        champsCapacite.forEach(function(id) {
+            const valeur = parseInt(document.getElementById(id).value) || 0;
+            capaciteTotale += valeur;
+        });
+
+        const marge = capaciteTotale - demandeTotale;
+
+        document.getElementById('demande-totale').textContent = demandeTotale;
+        document.getElementById('capacite-totale').textContent = capaciteTotale;
+
+        const elementMarge = document.getElementById('marge');
+        elementMarge.textContent = marge;
+
+        if (marge < 0) {
+            elementMarge.style.color = '#e74c3c';
+        } else {
+            elementMarge.style.color = '#2ecc71';
+        }
+    }
+
+    // Calculer au chargement de la page
+    calculerResume();
+
+    // Recalculer à chaque modification d'un champ
+    champsdemande.concat(champsCapacite).forEach(function(id) {
+        document.getElementById(id).addEventListener('input', calculerResume);
+    });
+</script>
 {% endblock %}
