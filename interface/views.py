@@ -22,7 +22,6 @@ def resultats(request):
     if request.method == 'POST':
         form = DonneesForm(request.POST)
         if form.is_valid():
-            # Fausses données pour l'instant
             resultats_fictifs = {
                 'cout_total': 19400,
                 'statut': 'Optimal',
@@ -42,16 +41,51 @@ def resultats(request):
             }
             return render(request, 'interface/resultats.html', {'resultats': resultats_fictifs})
         else:
-            # Formulaire invalide : on retourne à l'accueil avec les erreurs
             return render(request, 'interface/index.html', {'form': form})
 
-    # Si quelqu'un accède à /resultats/ directement sans passer par le formulaire
     form = DonneesForm()
     return render(request, 'interface/index.html', {'form': form})
 
 
 def scenarios(request):
-    return render(request, 'interface/scenarios.html')
+    liste_scenarios = [
+        {
+            'numero': 1,
+            'titre': 'Augmentation des requêtes',
+            'description': 'Toutes les demandes par région augmentent de 20%.',
+            'impact': 'Les centres risquent d\'être saturés.',
+            'statut': 'Non calculé',
+        },
+        {
+            'numero': 2,
+            'titre': 'Réduction capacité C2',
+            'description': 'La capacité du centre C2 est réduite de 25%.',
+            'impact': 'Le flux doit être redistribué vers C1 et C3.',
+            'statut': 'Non calculé',
+        },
+        {
+            'numero': 3,
+            'titre': 'Augmentation coûts C3',
+            'description': 'Les coûts unitaires du centre C3 augmentent de 30%.',
+            'impact': 'C3 devient moins attractif, le solveur privilégiera C1 et C2.',
+            'statut': 'Non calculé',
+        },
+        {
+            'numero': 4,
+            'titre': 'Indisponibilité d\'un centre',
+            'description': 'Le centre C2 est temporairement hors service.',
+            'impact': 'Toute la charge de C2 est absorbée par C1 et C3.',
+            'statut': 'Non calculé',
+        },
+        {
+            'numero': 5,
+            'titre': 'Contrainte métier personnalisée',
+            'description': 'C3 ne peut pas traiter les requêtes de R4.',
+            'impact': 'Les requêtes de R4 sont forcément traitées par C1 ou C2.',
+            'statut': 'Non calculé',
+        },
+    ]
+    return render(request, 'interface/scenarios.html', {'scenarios': liste_scenarios})
 
 
 def historique(request):
