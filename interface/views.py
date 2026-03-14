@@ -88,5 +88,37 @@ def scenarios(request):
     return render(request, 'interface/scenarios.html', {'scenarios': liste_scenarios})
 
 
+
+# on ajoute les données fictives
 def historique(request):
-    return render(request, 'interface/historique.html')
+    liste_historique = [
+        {
+            'numero': 1,
+            'nom': 'Situation initiale',
+            'date': '14/03/2026 15:30',
+            'statut': 'Optimal',
+            'cout_total': 19400,
+        },
+        {
+            'numero': 2,
+            'nom': 'Scénario 1 — Augmentation requêtes',
+            'date': '14/03/2026 15:45',
+            'statut': 'Optimal',
+            'cout_total': 23280,
+        },
+        {
+            'numero': 3,
+            'nom': 'Scénario 2 — Réduction capacité C2',
+            'date': '14/03/2026 16:00',
+            'statut': 'Optimal',
+            'cout_total': 21100,
+        },
+        {
+            'numero': 4,
+            'nom': 'Scénario 4 — Indisponibilité C2',
+            'date': '14/03/2026 16:15',
+            'statut': 'Infaisable',
+            'cout_total': None,
+        },
+    ]
+    return render(request, 'interface/historique.html', {'historique': liste_historique})

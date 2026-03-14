@@ -194,3 +194,15 @@ footer {
     background-color: #bdc3c7;
     cursor: not-allowed;
 }
+
+
+/* Statuts historique */
+.statut-optimal {
+    background-color: #d5f5e3;
+    color: #1e8449;
+}
+
+.statut-infaisable {
+    background-color: #fde8e8;
+    color: #e74c3c;
+}
