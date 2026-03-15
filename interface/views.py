@@ -41,6 +41,29 @@ def resultats(request):
                 {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
             ]
 
+            # Coûts unitaires fictifs identiques aux données initiales
+            couts_unitaires = {
+                'C1': {'R1': 5, 'R2': 6, 'R3': 7, 'R4': 8},
+                'C2': {'R1': 4, 'R2': 5, 'R3': 6, 'R4': 7},
+                'C3': {'R1': 6, 'R2': 4, 'R3': 5, 'R4': 6},
+            }
+
+            # Construire le tableau récapitulatif des coûts
+            tableau_couts = []
+            for ligne in flux:
+                region = ligne['region']
+                centre = ligne['centre']
+                quantite = ligne['quantite']
+                cout_unitaire = couts_unitaires[centre][region]
+                cout_total_ligne = cout_unitaire * quantite
+                tableau_couts.append({
+                    'region': region,
+                    'centre': centre,
+                    'quantite': quantite,
+                    'cout_unitaire': cout_unitaire,
+                    'cout_total_ligne': cout_total_ligne,
+                })
+
             chemin_flux = os.path.join(
                 settings.BASE_DIR, 'static', 'graphique_flux.png'
             )
@@ -56,6 +79,7 @@ def resultats(request):
                 'statut': 'Optimal',
                 'flux': flux,
                 'utilisation': utilisation,
+                'tableau_couts': tableau_couts,
             }
             return render(request, 'interface/resultats.html', {'resultats': resultats_fictifs})
         else:
@@ -141,7 +165,6 @@ def historique(request):
 
 
 def comparaison(request):
-    # Deux scénarios fictifs pour construire l'affichage
     scenario_a = {
         'nom': 'Situation initiale',
         'cout_total': 19400,
@@ -180,7 +203,6 @@ def comparaison(request):
         ],
     }
 
-    # Différence de coût entre les deux scénarios
     difference_cout = scenario_b['cout_total'] - scenario_a['cout_total']
 
     contexte = {

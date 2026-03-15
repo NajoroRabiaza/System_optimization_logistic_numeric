@@ -33,6 +33,30 @@
     {% endfor %}
 </table>
 
+<h2>Tableau récapitulatif des coûts</h2>
+<table>
+    <tr>
+        <th>Région</th>
+        <th>Centre</th>
+        <th>Requêtes traitées</th>
+        <th>Coût unitaire</th>
+        <th>Coût total</th>
+    </tr>
+    {% for ligne in resultats.tableau_couts %}
+    <tr>
+        <td>{{ ligne.region }}</td>
+        <td>{{ ligne.centre }}</td>
+        <td>{{ ligne.quantite }}</td>
+        <td>{{ ligne.cout_unitaire }}</td>
+        <td><strong>{{ ligne.cout_total_ligne }}</strong></td>
+    </tr>
+    {% endfor %}
+    <tr class="ligne-total">
+        <td colspan="4">Total général</td>
+        <td><strong>{{ resultats.cout_total }}</strong></td>
+    </tr>
+</table>
+
 <h2>Graphique de répartition des flux</h2>
 <div class="graphique-conteneur">
     <img src="{% static 'graphique_flux.png' %}" alt="Graphique de répartition des flux">
