@@ -41,13 +41,11 @@ def resultats(request):
                 {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
             ]
 
-            # Graphique 1 : répartition des flux
             chemin_flux = os.path.join(
                 settings.BASE_DIR, 'static', 'graphique_flux.png'
             )
             generer_graphique_flux(flux, chemin_flux)
 
-            # Graphique 2 : utilisation des capacités
             chemin_capacites = os.path.join(
                 settings.BASE_DIR, 'static', 'graphique_capacites.png'
             )
@@ -140,3 +138,54 @@ def historique(request):
         },
     ]
     return render(request, 'interface/historique.html', {'historique': liste_historique})
+
+
+def comparaison(request):
+    # Deux scénarios fictifs pour construire l'affichage
+    scenario_a = {
+        'nom': 'Situation initiale',
+        'cout_total': 19400,
+        'statut': 'Optimal',
+        'utilisation': [
+            {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
+            {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
+            {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
+        ],
+        'flux': [
+            {'region': 'R1', 'centre': 'C1', 'quantite': 600},
+            {'region': 'R1', 'centre': 'C2', 'quantite': 600},
+            {'region': 'R2', 'centre': 'C2', 'quantite': 600},
+            {'region': 'R2', 'centre': 'C3', 'quantite': 300},
+            {'region': 'R3', 'centre': 'C3', 'quantite': 700},
+            {'region': 'R4', 'centre': 'C1', 'quantite': 600},
+        ],
+    }
+
+    scenario_b = {
+        'nom': 'Scénario 1 — Augmentation 20% requêtes',
+        'cout_total': 23280,
+        'statut': 'Optimal',
+        'utilisation': [
+            {'centre': 'C1', 'charge': 1500, 'capacite': 1500, 'pourcentage': 100},
+            {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
+            {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
+        ],
+        'flux': [
+            {'region': 'R1', 'centre': 'C1', 'quantite': 900},
+            {'region': 'R1', 'centre': 'C2', 'quantite': 540},
+            {'region': 'R2', 'centre': 'C2', 'quantite': 660},
+            {'region': 'R2', 'centre': 'C3', 'quantite': 420},
+            {'region': 'R3', 'centre': 'C3', 'quantite': 580},
+            {'region': 'R4', 'centre': 'C1', 'quantite': 600},
+        ],
+    }
+
+    # Différence de coût entre les deux scénarios
+    difference_cout = scenario_b['cout_total'] - scenario_a['cout_total']
+
+    contexte = {
+        'scenario_a': scenario_a,
+        'scenario_b': scenario_b,
+        'difference_cout': difference_cout,
+    }
+    return render(request, 'interface/comparaison.html', contexte)
