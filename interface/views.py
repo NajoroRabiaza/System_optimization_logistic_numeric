@@ -1,5 +1,8 @@
+import os
 from django.shortcuts import render
+from django.conf import settings
 from .forms import DonneesForm
+from visualization.charts import generer_graphique_flux
 
 
 def index(request):
@@ -22,17 +25,26 @@ def resultats(request):
     if request.method == 'POST':
         form = DonneesForm(request.POST)
         if form.is_valid():
+
+            flux = [
+                {'region': 'R1', 'centre': 'C1', 'quantite': 600},
+                {'region': 'R1', 'centre': 'C2', 'quantite': 600},
+                {'region': 'R2', 'centre': 'C2', 'quantite': 600},
+                {'region': 'R2', 'centre': 'C3', 'quantite': 300},
+                {'region': 'R3', 'centre': 'C3', 'quantite': 700},
+                {'region': 'R4', 'centre': 'C1', 'quantite': 600},
+            ]
+
+            # Générer le graphique et le sauvegarder dans static/
+            chemin_image = os.path.join(
+                settings.BASE_DIR, 'static', 'graphique_flux.png'
+            )
+            generer_graphique_flux(flux, chemin_image)
+
             resultats_fictifs = {
                 'cout_total': 19400,
                 'statut': 'Optimal',
-                'flux': [
-                    {'region': 'R1', 'centre': 'C1', 'quantite': 600},
-                    {'region': 'R1', 'centre': 'C2', 'quantite': 600},
-                    {'region': 'R2', 'centre': 'C2', 'quantite': 600},
-                    {'region': 'R2', 'centre': 'C3', 'quantite': 300},
-                    {'region': 'R3', 'centre': 'C3', 'quantite': 700},
-                    {'region': 'R4', 'centre': 'C1', 'quantite': 600},
-                ],
+                'flux': flux,
                 'utilisation': [
                     {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
                     {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
@@ -88,8 +100,6 @@ def scenarios(request):
     return render(request, 'interface/scenarios.html', {'scenarios': liste_scenarios})
 
 
-
-# on ajoute les données fictives
 def historique(request):
     liste_historique = [
         {

@@ -1,4 +1,5 @@
 {% extends "interface/base.html" %}
+{% load static %}
 
 {% block title %}Résultats — Logistics Optimizer{% endblock %}
 
@@ -31,6 +32,11 @@
     </tr>
     {% endfor %}
 </table>
+
+<h2>Graphique de répartition des flux</h2>
+<div class="graphique-conteneur">
+    <img src="{% static 'graphique_flux.png' %}" alt="Graphique de répartition des flux">
+</div>
 
 <h2>Utilisation des centres</h2>
 <div class="utilisation-liste">
