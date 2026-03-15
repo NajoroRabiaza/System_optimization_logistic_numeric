@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 from .forms import DonneesForm
-from visualization.charts import generer_graphique_flux
+from visualization.charts import generer_graphique_flux, generer_graphique_capacites
 
 
 def index(request):
@@ -35,21 +35,29 @@ def resultats(request):
                 {'region': 'R4', 'centre': 'C1', 'quantite': 600},
             ]
 
-            # Générer le graphique et le sauvegarder dans static/
-            chemin_image = os.path.join(
+            utilisation = [
+                {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
+                {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
+                {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
+            ]
+
+            # Graphique 1 : répartition des flux
+            chemin_flux = os.path.join(
                 settings.BASE_DIR, 'static', 'graphique_flux.png'
             )
-            generer_graphique_flux(flux, chemin_image)
+            generer_graphique_flux(flux, chemin_flux)
+
+            # Graphique 2 : utilisation des capacités
+            chemin_capacites = os.path.join(
+                settings.BASE_DIR, 'static', 'graphique_capacites.png'
+            )
+            generer_graphique_capacites(utilisation, chemin_capacites)
 
             resultats_fictifs = {
                 'cout_total': 19400,
                 'statut': 'Optimal',
                 'flux': flux,
-                'utilisation': [
-                    {'centre': 'C1', 'charge': 1200, 'capacite': 1500, 'pourcentage': 80},
-                    {'centre': 'C2', 'charge': 1200, 'capacite': 1200, 'pourcentage': 100},
-                    {'centre': 'C3', 'charge': 1000, 'capacite': 1000, 'pourcentage': 100},
-                ],
+                'utilisation': utilisation,
             }
             return render(request, 'interface/resultats.html', {'resultats': resultats_fictifs})
         else:
