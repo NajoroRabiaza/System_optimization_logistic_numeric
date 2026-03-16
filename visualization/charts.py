@@ -247,7 +247,7 @@ def _draw_donut(ax, pct, label_centre, label_bas,
     if detail:
         ax.text(0, -0.44, detail,
                 ha='center', va='center',
-                fontsize=8.5, color=TICK_COLOR,
+                fontsize=9, fontweight='semibold', color=TITLE_COLOR,
                 fontfamily=FONT, zorder=4)
 
     ax.set_xlim(-1.25, 1.25)
