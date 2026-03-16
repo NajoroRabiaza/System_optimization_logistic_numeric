@@ -154,7 +154,7 @@
     /* ═══════════════════════════════════════════════════════
        PALETTE & THÈME
     ═══════════════════════════════════════════════════════ */
-    const isDark     = document.documentElement.getAttribute('data-theme') === 'dark';
+    const isDark     = localStorage.getItem('theme') === 'dark';
     const PRIMARY    = '#448A99';
     const PRI_DARK   = '#336875';
     const PRI_3      = '#2c3e50';
