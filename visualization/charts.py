@@ -55,17 +55,17 @@ def _title_block(ax, title, subtitle=None):
                 fontsize=9, color=TICK_COLOR, va='top', fontfamily=FONT)
 
 
-def _legend_card(ax, labels, colors, x_rel=0.66, y_rel=0.96):
-    pad_x  = 0.022
-    pad_y  = 0.028
-    line_h = 0.075
-    dot_r  = 0.020
-    card_w = 0.32
-    card_h = pad_y * 2 + line_h * len(labels) + 0.005
+def _legend_card(ax, labels, colors, x_rel=0.74, y_rel=0.96):
+    pad_x  = 0.014
+    pad_y  = 0.018
+    line_h = 0.055
+    dot_r  = 0.013
+    card_w = 0.24
+    card_h = pad_y * 2 + line_h * len(labels) + 0.004
 
     card = FancyBboxPatch(
         (x_rel, y_rel - card_h), card_w, card_h,
-        boxstyle="round,pad=0.008",
+        boxstyle="round,pad=0.006",
         transform=ax.transAxes,
         facecolor=LEGEND_BG, edgecolor='none',
         zorder=10, clip_on=False,
@@ -81,10 +81,10 @@ def _legend_card(ax, labels, colors, x_rel=0.66, y_rel=0.96):
         )
         ax.add_patch(dot)
         ax.text(
-            x_rel + pad_x + dot_r * 2 + 0.016, y_c,
+            x_rel + pad_x + dot_r * 2 + 0.012, y_c,
             label,
             transform=ax.transAxes,
-            color=LEGEND_FG, fontsize=8.5,
+            color=LEGEND_FG, fontsize=7,
             va='center', fontfamily=FONT,
             zorder=11, clip_on=False,
         )
@@ -123,7 +123,7 @@ def generer_graphique_flux(donnees_flux, chemin_sortie):
     ax.yaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True, nbins=5))
 
     _title_block(ax, 'Répartition des flux', 'Nombre de requêtes par région et par centre')
-    _legend_card(ax, centres, bar_colors, x_rel=0.66, y_rel=0.97)
+    _legend_card(ax, centres, bar_colors, x_rel=0.74, y_rel=0.97)
 
     fig.subplots_adjust(top=0.80, right=0.97, left=0.07, bottom=0.10)
     plt.savefig(chemin_sortie, dpi=120, bbox_inches='tight',
@@ -169,7 +169,7 @@ def generer_graphique_capacites(donnees_utilisation, chemin_sortie):
 
     _title_block(ax, 'Utilisation des capacités', 'Charge actuelle vs capacité maximale par centre')
     _legend_card(ax, ['Charge actuelle', 'Capacité max'],
-                 [PRIMARY, COLOR_CAP], x_rel=0.63, y_rel=0.97)
+                 [PRIMARY, COLOR_CAP], x_rel=0.74, y_rel=0.97)
 
     fig.subplots_adjust(top=0.80, right=0.97, left=0.07, bottom=0.10)
     plt.savefig(chemin_sortie, dpi=120, bbox_inches='tight',
