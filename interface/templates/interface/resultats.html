@@ -5,6 +5,56 @@
 
 {% block content %}
 
+<!-- ── Overlay de chargement ──────────────────────────────── -->
+<div id="loadingOverlay">
+    <div class="loader-scene">
+
+        <!-- Anneau orbital : tout tourne ensemble -->
+        <div class="orbit-ring">
+
+            <!-- Points sur l'orbite -->
+            <span class="odot d1"></span>
+            <span class="odot d2"></span>
+            <span class="odot d3"></span>
+            <span class="odot d4"></span>
+
+            <!-- Fusée qui chasse les points -->
+            <div class="rocket-orbit">
+                <div class="rocket-inner">
+                    <svg viewBox="0 0 40 56" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="50">
+                        <!-- Corps -->
+                        <path d="M20 2 C12 2 8 14 8 26 L8 40 L20 46 L32 40 L32 26 C32 14 28 2 20 2Z"
+                              fill="#ffffff" stroke="#1a2e3b" stroke-width="1.8"/>
+                        <!-- Hublot -->
+                        <circle cx="20" cy="22" r="5.5" fill="#3a8fa8" stroke="#1a2e3b" stroke-width="1.6"/>
+                        <circle cx="20" cy="22" r="3"   fill="#6bbdd1"/>
+                        <!-- Aileron gauche -->
+                        <path d="M8 32 L2 42 L8 40 Z" fill="#ffffff" stroke="#1a2e3b" stroke-width="1.6"/>
+                        <!-- Aileron droit -->
+                        <path d="M32 32 L38 42 L32 40 Z" fill="#ffffff" stroke="#1a2e3b" stroke-width="1.6"/>
+                        <!-- Flamme -->
+                        <ellipse cx="20" cy="48" rx="4"   ry="6"   fill="#e67e22" opacity=".9"/>
+                        <ellipse cx="20" cy="46" rx="2.5" ry="3.5" fill="#f39c12"/>
+                        <ellipse cx="15" cy="47" rx="2"   ry="3.5" fill="#e67e22" opacity=".65"/>
+                        <ellipse cx="25" cy="47" rx="2"   ry="3.5" fill="#e67e22" opacity=".65"/>
+                        <!-- Traits de vitesse -->
+                        <line x1="6" y1="26" x2="1" y2="26" stroke="#1a2e3b" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="6" y1="30" x2="3" y2="30" stroke="#1a2e3b" stroke-width="1.5" stroke-linecap="round"/>
+                        <line x1="6" y1="22" x2="3" y2="22" stroke="#1a2e3b" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+
+        </div><!-- /orbit-ring -->
+
+        <p class="loader-label">Calcul en cours…</p>
+    </div>
+</div>
+
+<!-- Contenu masqué pendant le chargement -->
+<div id="pageContent" style="visibility:hidden; opacity:0;">
+
+
 <div class="page-header">
     <h1>Résultats de l'optimisation</h1>
     <p class="subtitle">Solution calculée par le solveur PuLP.</p>
@@ -138,10 +188,170 @@
 
 <a href="{% url 'interface:index' %}" class="back-link">← Retour à l'accueil</a>
 
+</div><!-- /pageContent -->
+
 {% endblock %}
 
 {% block extra_js %}
+<style>
+/* ── Overlay loader ────────────────────────────────────────── */
+#loadingOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--bg, #f4f7f9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity .55s ease, visibility .55s ease;
+}
+
+#loadingOverlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.loader-scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+}
+
+/* ── Anneau orbital ────────────────────────────────────────── */
+/*
+   Principe : un seul conteneur carré tourne sur lui-même.
+   Chaque élément enfant est positionné sur la circonférence
+   via rotate(angle) translateX(rayon). Comme le conteneur
+   tourne, tout tourne ensemble — la fusée rattrape les points.
+*/
+
+.orbit-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    animation: orbit-spin 2.6s linear infinite;
+}
+
+@keyframes orbit-spin {
+    from { transform: rotate(0deg);   }
+    to   { transform: rotate(360deg); }
+}
+
+/* Ancrage commun : coin supérieur gauche au centre du ring */
+.odot,
+.rocket-orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+/* ── Points ── */
+.odot {
+    border-radius: 50%;
+    /* counter-rotate pour que les cercles restent ronds visuellement
+       (optionnel, les cercles sont symétriques donc inutile,
+       mais on le garde pour cohérence) */
+}
+
+/* Rayon d'orbite : 62px */
+/* rotate(angle) translateX(62px) positionne sur le cercle    */
+/* margin-* = -demi-taille pour centrer sur le point d'ancrage */
+
+.d1 {
+    width: 10px; height: 10px;
+    background: #1a4a6e;
+    margin: -5px 0 0 -5px;
+    transform: rotate(0deg) translateX(62px);
+}
+.d2 {
+    width: 9px; height: 9px;
+    background: #1a4a6e;
+    margin: -4.5px 0 0 -4.5px;
+    transform: rotate(75deg) translateX(62px);
+}
+.d3 {
+    width: 9px; height: 9px;
+    background: #1a4a6e;
+    margin: -4.5px 0 0 -4.5px;
+    transform: rotate(145deg) translateX(62px);
+}
+.d4 {
+    width: 8px; height: 8px;
+    background: #c0392b;
+    margin: -4px 0 0 -4px;
+    transform: rotate(210deg) translateX(62px);
+}
+
+/* ── Fusée ── */
+/* Placée à 285° — juste derrière le dernier point (210°)
+   après un tour complet, elle semble le chasser.           */
+.rocket-orbit {
+    /* Centre sur le point d'ancrage */
+    margin: -25px 0 0 -18px;
+    transform: rotate(285deg) translateX(62px);
+}
+
+/* La fusée elle-même contre-tourne pour rester lisible
+   (elle garde toujours la même orientation globale)
+   et on lui applique une inclinaison de +90° pour qu'elle
+   pointe dans le sens de la course (tangente à l'orbite). */
+.rocket-inner {
+    animation: counter-spin 2.6s linear infinite;
+    /* +90° = pointe dans le sens horaire de l'orbite */
+    transform: rotate(90deg);
+}
+
+@keyframes counter-spin {
+    /* Part de 90° (tangente) et revient à 90° après -360° */
+    from { transform: rotate(90deg);   }
+    to   { transform: rotate(-270deg); }
+}
+
+/* ── Label ── */
+.loader-label {
+    font-size: .75rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--text-muted, #8b9caa);
+    animation: label-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes label-pulse {
+    0%, 100% { opacity: 1;   }
+    50%       { opacity: .3; }
+}
+
+/* ── Révélation contenu ── */
+#pageContent {
+    transition: opacity .6s ease;
+}
+#pageContent.visible {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+/* ── Loader : 5 secondes minimum avant révélation ── */
+const LOADER_DURATION = 5000;
+
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        const overlay = document.getElementById('loadingOverlay');
+        const content = document.getElementById('pageContent');
+
+        overlay.classList.add('hidden');
+        content.classList.add('visible');
+
+        overlay.addEventListener('transitionend', function () {
+            overlay.remove();
+        }, { once: true });
+
+    }, LOADER_DURATION);
+});
+</script>
 <script>
 (function () {
 
@@ -345,7 +555,7 @@
 
                 ctx.font      = `500 10px ${FONT}`;
                 ctx.fillStyle = TEXT;
-                ctx.fillText(`${u.charge}/${u.capacite} req`, cx, cy + 36);
+                ctx.fillText(`${u.charge}/${u.capacite} req.`, cx, cy + 36);
 
                 ctx.restore();
             },
