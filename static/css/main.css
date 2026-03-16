@@ -1066,3 +1066,43 @@
 [data-theme="dark"] .chart-card {
   background: var(--surface);
 }
+
+/* ── Bouton de rafraîchissement des graphiques ──────────── */
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  font-size: .78rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+  user-select: none;
+}
+
+.btn-refresh:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-alpha, rgba(68,138,153,.08));
+}
+
+.btn-refresh:active {
+  transform: scale(.96);
+}
+
+/* Rotation de l'icône pendant le rafraîchissement */
+.btn-refresh.spinning {
+  pointer-events: none;
+  opacity: .65;
+  animation: spin-icon .9s linear forwards;
+}
+
+@keyframes spin-icon {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

@@ -62,6 +62,9 @@
 
     <!-- Chart.js — Flux -->
     <div class="chart-card">
+        <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+            <button class="btn-refresh" id="refreshFlux" title="Rafraîchir le graphique">↻ Rafraîchir</button>
+        </div>
         <canvas id="chartFlux"></canvas>
     </div>
 
@@ -111,6 +114,9 @@
 <div class="section-heading">Utilisation des centres</div>
 
 <div class="chart-card" style="padding: 28px 24px; margin-bottom: 28px;">
+    <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+        <button class="btn-refresh" id="refreshDonuts" title="Rafraîchir les jauges">↻ Rafraîchir</button>
+    </div>
     <div style="display:flex; flex-direction:row; justify-content:center; align-items:center; gap:32px; width:100%; flex-wrap:nowrap;">
         {% for u in resultats.utilisation %}
         <div style="flex:0 0 auto; width:200px; height:200px; position:relative;">
@@ -124,6 +130,9 @@
 <div class="section-heading">Graphique d'utilisation des capacités</div>
 
 <div class="chart-card" style="margin-bottom: 28px;">
+    <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+        <button class="btn-refresh" id="refreshCapacites" title="Rafraîchir le graphique">↻ Rafraîchir</button>
+    </div>
     <canvas id="chartCapacites"></canvas>
 </div>
 
@@ -191,14 +200,25 @@
     };
 
     /* ═══════════════════════════════════════════════════════
-       1. GRAPHIQUE FLUX — bar groupé
+       INSTANCES — stockées pour permettre destroy + rebuild
     ═══════════════════════════════════════════════════════ */
-    (function () {
+    let chartFluxInstance     = null;
+    let chartCapacitesInstance = null;
+    const donutInstances      = [];
+
+    /* ═══════════════════════════════════════════════════════
+       1. GRAPHIQUE FLUX — builder isolé
+    ═══════════════════════════════════════════════════════ */
+    function buildFluxChart() {
+        if (chartFluxInstance) {
+            chartFluxInstance.destroy();
+            chartFluxInstance = null;
+        }
+
         const regions  = ['R1', 'R2', 'R3', 'R4'];
         const centres  = ['C1', 'C2', 'C3'];
         const colors   = [PRIMARY, PRI_DARK, PRI_3];
 
-        /* Agréger les données en matrice region × centre */
         const matrix = {};
         centres.forEach(c => {
             matrix[c] = {};
@@ -207,17 +227,17 @@
         fluxRaw.forEach(d => (matrix[d.centre][d.region] = d.quantite));
 
         const datasets = centres.map((c, i) => ({
-            label           : c,
-            data            : regions.map(r => matrix[c][r]),
-            backgroundColor : colors[i],
+            label            : c,
+            data             : regions.map(r => matrix[c][r]),
+            backgroundColor  : colors[i],
             hoverBackgroundColor: colors[i] + 'cc',
-            borderRadius    : 8,
-            borderSkipped   : false,
-            barPercentage   : 0.72,
+            borderRadius     : 8,
+            borderSkipped    : false,
+            barPercentage    : 0.72,
             categoryPercentage: 0.75,
         }));
 
-        new Chart(document.getElementById('chartFlux'), {
+        chartFluxInstance = new Chart(document.getElementById('chartFlux'), {
             type : 'bar',
             data : { labels: regions, datasets },
             options: {
@@ -250,13 +270,13 @@
                         position : 'top',
                         align    : 'end',
                         labels   : {
-                            boxWidth      : 12,
-                            boxHeight     : 12,
-                            borderRadius  : 4,
+                            boxWidth       : 12,
+                            boxHeight      : 12,
+                            borderRadius   : 4,
                             useBorderRadius: true,
-                            padding       : 14,
-                            color         : TEXT,
-                            font          : { size: 12, weight: '600' },
+                            padding        : 14,
+                            color          : TEXT,
+                            font           : { size: 12, weight: '600' },
                         },
                     },
                     tooltip: {
@@ -280,17 +300,22 @@
                 },
             },
         });
-    }());
+    }
 
     /* ═══════════════════════════════════════════════════════
-       2. JAUGES CIRCULAIRES — donuts animés
+       2. JAUGES CIRCULAIRES — builder isolé par index
     ═══════════════════════════════════════════════════════ */
-    utilisationRaw.forEach(function (u, i) {
+    function buildDonutChart(i) {
+        if (donutInstances[i]) {
+            donutInstances[i].destroy();
+            donutInstances[i] = null;
+        }
+
+        const u         = utilisationRaw[i];
         const color     = pctColor(u.pct);
         const trackCol  = isDark ? '#1e3040' : '#eef2f6';
         const remaining = 100 - u.pct;
 
-        /* Plugin centre-texte (closure par donut) */
         const centerPlugin = {
             id: 'center_' + i,
             afterDraw(chart) {
@@ -301,14 +326,12 @@
 
                 ctx.save();
 
-                /* Pourcentage */
                 ctx.font         = `bold 28px ${FONT}`;
                 ctx.fillStyle    = color;
                 ctx.textAlign    = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(`${u.pct}%`, cx, cy - 16);
 
-                /* Séparateur */
                 ctx.beginPath();
                 ctx.moveTo(cx - 26, cy + 2);
                 ctx.lineTo(cx + 26, cy + 2);
@@ -316,12 +339,10 @@
                 ctx.lineWidth   = 1.2;
                 ctx.stroke();
 
-                /* Nom du centre */
                 ctx.font      = `700 13px ${FONT}`;
                 ctx.fillStyle = TEXT;
                 ctx.fillText(u.centre, cx, cy + 18);
 
-                /* Détail charge/capacité */
                 ctx.font      = `500 10px ${FONT}`;
                 ctx.fillStyle = TEXT;
                 ctx.fillText(`${u.charge}/${u.capacite} req.`, cx, cy + 36);
@@ -330,7 +351,7 @@
             },
         };
 
-        new Chart(document.getElementById('chartDonut' + i), {
+        donutInstances[i] = new Chart(document.getElementById('chartDonut' + i), {
             type    : 'doughnut',
             data    : {
                 datasets: [{
@@ -359,23 +380,31 @@
                 layout: { padding: 10 },
             },
         });
-    });
+    }
+
+    function buildAllDonuts() {
+        utilisationRaw.forEach((_, i) => buildDonutChart(i));
+    }
 
     /* ═══════════════════════════════════════════════════════
-       3. GRAPHIQUE CAPACITÉS — barres overlay + labels %
+       3. GRAPHIQUE CAPACITÉS — builder isolé
     ═══════════════════════════════════════════════════════ */
-    (function () {
+    function buildCapacitesChart() {
+        if (chartCapacitesInstance) {
+            chartCapacitesInstance.destroy();
+            chartCapacitesInstance = null;
+        }
+
         const centres   = utilisationRaw.map(u => u.centre);
         const charges   = utilisationRaw.map(u => u.charge);
         const caps      = utilisationRaw.map(u => u.capacite);
         const pcts      = utilisationRaw.map(u => u.pct);
         const barColors = pcts.map(pctColor);
 
-        /* Plugin labels % au-dessus des barres de charge */
         const pctLabelPlugin = {
             id: 'pctLabels',
             afterDatasetsDraw(chart) {
-                const meta = chart.getDatasetMeta(1);   /* dataset 1 = charges */
+                const meta = chart.getDatasetMeta(1);
                 const { ctx } = chart;
                 meta.data.forEach((bar, i) => {
                     ctx.save();
@@ -389,7 +418,7 @@
             },
         };
 
-        new Chart(document.getElementById('chartCapacites'), {
+        chartCapacitesInstance = new Chart(document.getElementById('chartCapacites'), {
             type    : 'bar',
             data    : {
                 labels  : centres,
@@ -449,15 +478,14 @@
                         position : 'top',
                         align    : 'end',
                         labels   : {
-                            boxWidth      : 12,
-                            boxHeight     : 12,
-                            borderRadius  : 4,
+                            boxWidth       : 12,
+                            boxHeight      : 12,
+                            borderRadius   : 4,
                             useBorderRadius: true,
-                            padding       : 14,
-                            color         : TEXT,
-                            font          : { size: 12, weight: '600' },
+                            padding        : 14,
+                            color          : TEXT,
+                            font           : { size: 12, weight: '600' },
                             generateLabels(chart) {
-                                /* Couleur unique pour "Charge actuelle" dans la légende */
                                 const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
                                 labels[1].fillStyle = PRIMARY;
                                 return labels;
@@ -486,7 +514,35 @@
                 },
             },
         });
-    }());
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       INITIALISATION — premier rendu de tous les graphiques
+    ═══════════════════════════════════════════════════════ */
+    buildFluxChart();
+    buildAllDonuts();
+    buildCapacitesChart();
+
+    /* ═══════════════════════════════════════════════════════
+       BOUTONS DE RAFRAÎCHISSEMENT — un par graphique
+    ═══════════════════════════════════════════════════════ */
+    document.getElementById('refreshFlux').addEventListener('click', function () {
+        this.classList.add('spinning');
+        buildFluxChart();
+        setTimeout(() => this.classList.remove('spinning'), 950);
+    });
+
+    document.getElementById('refreshDonuts').addEventListener('click', function () {
+        this.classList.add('spinning');
+        buildAllDonuts();
+        setTimeout(() => this.classList.remove('spinning'), 1300);
+    });
+
+    document.getElementById('refreshCapacites').addEventListener('click', function () {
+        this.classList.add('spinning');
+        buildCapacitesChart();
+        setTimeout(() => this.classList.remove('spinning'), 950);
+    });
 
 }());
 </script>
