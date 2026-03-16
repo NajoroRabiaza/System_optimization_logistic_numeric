@@ -18,7 +18,20 @@
         <a href="{% url 'interface:comparaison' %}" {% if request.resolver_match.url_name == 'comparaison' %}class="active"{% endif %}>Comparaison</a>
         <a href="{% url 'interface:historique' %}" {% if request.resolver_match.url_name == 'historique' %}class="active"{% endif %}>Historique</a>
         <div class="nav-spacer"></div>
-        <span class="nav-badge">L3 Informatique</span>
+        <span class="nav-badge">L2 Informatique</span>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}" style="margin:0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout" title="Se déconnecter">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Déconnexion
+            </button>
+        </form>
+        {% endif %}
         <button class="theme-toggle" id="themeToggle" title="Basculer thème sombre/clair" aria-label="Basculer thème">
             <span class="theme-toggle-icon">
                 <!-- Sun -->
@@ -46,7 +59,7 @@
     </main>
 
     <footer>
-        <p>Projet L3 Informatique — Optimisation logistique numérique</p>
+        <p>Projet L2 Informatique — Optimisation logistique numérique</p>
     </footer>
 
     {% block extra_js %}{% endblock %}

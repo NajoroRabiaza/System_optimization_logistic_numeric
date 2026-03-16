@@ -1,7 +1,9 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from .forms import DonneesForm
 
 
+@login_required
 def index(request):
     form = DonneesForm(initial={
         'demande_R1': 1200, 'demande_R2': 900, 'demande_R3': 700, 'demande_R4': 600,
@@ -13,6 +15,7 @@ def index(request):
     return render(request, 'interface/index.html', {'form': form})
 
 
+@login_required
 def resultats(request):
     if request.method == 'POST':
         form = DonneesForm(request.POST)
@@ -67,6 +70,7 @@ def resultats(request):
     return render(request, 'interface/index.html', {'form': form})
 
 
+@login_required
 def scenarios(request):
     liste_scenarios = [
         {'numero': 1, 'titre': 'Augmentation des requêtes',
@@ -88,6 +92,7 @@ def scenarios(request):
     return render(request, 'interface/scenarios.html', {'scenarios': liste_scenarios})
 
 
+@login_required
 def historique(request):
     liste_historique = [
         {'numero': 1, 'nom': 'Situation initiale',
@@ -102,6 +107,7 @@ def historique(request):
     return render(request, 'interface/historique.html', {'historique': liste_historique})
 
 
+@login_required
 def comparaison(request):
     scenario_a = {
         'nom': 'Situation initiale', 'cout_total': 19400, 'statut': 'Optimal',

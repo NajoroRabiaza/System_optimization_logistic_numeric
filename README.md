@@ -1,6 +1,6 @@
 # Logistics Optimizer
 
-Projet d'examen — L3 Informatique  
+Projet d'examen — L2 Informatique  
 Optimisation d'un système logistique numérique avec Django.
 
 ## Installation

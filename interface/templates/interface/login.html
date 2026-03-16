@@ -1,0 +1,358 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiOpt — Accès sécurisé</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
+            height: 100%;
+            background: #0b1015;
+            font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+            color: #c8d8e0;
+            overflow: hidden;
+        }
+
+        /* Grille de fond style HUD */
+        .login-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 110%, rgba(68,138,153,.18) 0%, transparent 70%),
+                radial-gradient(ellipse 40% 40% at 50% 100%, rgba(68,138,153,.10) 0%, transparent 60%);
+        }
+
+        .login-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(68,138,153,.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(68,138,153,.055) 1px, transparent 1px);
+            background-size: 48px 48px;
+        }
+
+        .login-bg::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(68,138,153,.6), transparent);
+            box-shadow: 0 0 40px 8px rgba(68,138,153,.22);
+        }
+
+        .login-wrap {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* Carte */
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(14, 22, 28, .94);
+            border: 1px solid rgba(68,138,153,.22);
+            border-radius: 16px;
+            padding: 48px 40px 40px;
+            box-shadow:
+                0 0 0 1px rgba(68,138,153,.07),
+                0 32px 80px rgba(0,0,0,.65),
+                inset 0 1px 0 rgba(255,255,255,.04);
+            backdrop-filter: blur(14px);
+        }
+
+        /* Logo */
+        .login-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 13px;
+            margin-bottom: 10px;
+        }
+
+        .login-logo-hex {
+            font-size: 2.6rem;
+            line-height: 1;
+            color: #448A99;
+            filter: drop-shadow(0 0 14px rgba(68,138,153,.75));
+        }
+
+        .login-logo-text {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            color: #e8f4f7;
+        }
+
+        .login-tagline {
+            text-align: center;
+            font-size: .72rem;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: rgba(68,138,153,.75);
+            margin-bottom: 38px;
+        }
+
+        .login-sep {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(68,138,153,.28), transparent);
+            margin-bottom: 34px;
+        }
+
+        /* Label */
+        .login-label {
+            display: block;
+            font-size: .7rem;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+            color: #5a8a96;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Input wrapper */
+        .login-input-wrap {
+            position: relative;
+            margin-bottom: 26px;
+        }
+
+        .login-input-wrap .field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #448A99;
+            pointer-events: none;
+            opacity: .65;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 13px 42px 13px 42px;
+            background: rgba(68,138,153,.07);
+            border: 1px solid rgba(68,138,153,.18);
+            border-radius: 10px;
+            color: #e8f4f7;
+            font-size: .95rem;
+            font-family: inherit;
+            letter-spacing: .06em;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        .login-input::placeholder {
+            color: rgba(90,138,150,.4);
+            letter-spacing: .03em;
+        }
+
+        .login-input:focus {
+            border-color: rgba(68,138,153,.55);
+            background: rgba(68,138,153,.11);
+            box-shadow: 0 0 0 3px rgba(68,138,153,.11), 0 0 22px rgba(68,138,153,.07);
+        }
+
+        /* Toggle password */
+        .toggle-pwd {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5a8a96;
+            padding: 4px;
+            line-height: 0;
+            transition: color .18s;
+        }
+        .toggle-pwd:hover { color: #448A99; }
+
+        /* Erreur */
+        .login-error {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(231,76,60,.09);
+            border: 1px solid rgba(231,76,60,.28);
+            border-radius: 8px;
+            padding: 11px 14px;
+            margin-bottom: 22px;
+            font-size: .83rem;
+            color: #e98c80;
+        }
+
+        /* Bouton */
+        .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #448A99, #336875);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: .95rem;
+            font-weight: 700;
+            font-family: inherit;
+            letter-spacing: .04em;
+            cursor: pointer;
+            transition: opacity .2s, transform .15s, box-shadow .2s;
+            box-shadow: 0 4px 20px rgba(68,138,153,.32);
+        }
+
+        .login-btn:hover {
+            opacity: .91;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 28px rgba(68,138,153,.42);
+        }
+
+        .login-btn:active { transform: translateY(0); }
+
+        /* HUD dots */
+        .hud-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 30px;
+        }
+
+        .hud-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(68,138,153,.25);
+        }
+
+        .hud-dot.active {
+            background: #448A99;
+            box-shadow: 0 0 8px rgba(68,138,153,.8);
+            animation: pulse-dot 2.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: .3; }
+        }
+
+        .login-footer-text {
+            margin-top: 26px;
+            text-align: center;
+            font-size: .68rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: rgba(90,138,150,.38);
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-bg"></div>
+
+<div class="login-wrap">
+    <div class="login-card">
+
+        <!-- Logo -->
+        <div class="login-logo">
+            <span class="login-logo-hex">⬡</span>
+            <span class="login-logo-text">LogiOpt</span>
+        </div>
+
+        <p class="login-tagline">Tour de contrôle logistique</p>
+
+        <div class="login-sep"></div>
+
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+
+            <!-- Username caché fixé à "admin" -->
+            <input type="hidden" name="username" value="admin">
+            <input type="hidden" name="next" value="{{ next }}">
+
+            {% if form.errors %}
+            <div class="login-error">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                Mot de passe incorrect. Accès refusé.
+            </div>
+            {% endif %}
+
+            <label class="login-label" for="id_password">Mot de passe administrateur</label>
+            <div class="login-input-wrap">
+                <!-- Icone cadenas -->
+                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+
+                <input
+                    class="login-input"
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    placeholder="••••••••••••"
+                    autofocus
+                    required
+                >
+
+                <!-- Toggle visibilité -->
+                <button type="button" class="toggle-pwd" id="togglePwd" tabindex="-1">
+                    <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="17" height="17">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </button>
+            </div>
+
+            <button type="submit" class="login-btn">
+                Accéder au système
+            </button>
+        </form>
+
+        <div class="hud-dots">
+            <div class="hud-dot active"></div>
+            <div class="hud-dot"></div>
+            <div class="hud-dot"></div>
+        </div>
+
+        <p class="login-footer-text">Projet L2 Informatique &mdash; Optimisation logistique</p>
+
+    </div>
+</div>
+
+<script>
+    // Applique le thème sauvegardé
+    if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    // Toggle visibilité mot de passe
+    const toggleBtn = document.getElementById('togglePwd');
+    const pwdInput  = document.getElementById('id_password');
+    const eyeIcon   = document.getElementById('eyeIcon');
+
+    const SVG_OPEN   = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+    const SVG_CLOSED = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+
+    toggleBtn.addEventListener('click', function () {
+        const hidden   = pwdInput.type === 'password';
+        pwdInput.type  = hidden ? 'text' : 'password';
+        eyeIcon.innerHTML = hidden ? SVG_CLOSED : SVG_OPEN;
+    });
+</script>
+
+</body>
+</html>

@@ -1106,3 +1106,66 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* ── Bouton de déconnexion dans la navbar ───────────────── */
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-size: .82rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  color: #e74c3c;
+  border-color: rgba(231,76,60,.45);
+  background: rgba(231,76,60,.07);
+}
+
+.btn-logout:active { transform: scale(.97); }
+
+[data-theme="dark"] .btn-logout:hover {
+  background: rgba(231,76,60,.12);
+}
+
+/* ── Bouton déconnexion (nav) ────────────────────────────── */
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  font-size: .78rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: color .18s, border-color .18s, background .18s;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  color: #e74c3c;
+  border-color: rgba(231,76,60,.5);
+  background: rgba(231,76,60,.07);
+}
+
+.btn-logout svg {
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+
+.btn-logout:hover svg {
+  transform: translateX(2px);
+}
