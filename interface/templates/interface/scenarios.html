@@ -3,13 +3,16 @@
 {% block title %}Scénarios — Logistics Optimizer{% endblock %}
 
 {% block content %}
-<h1>Scénarios d'analyse de sensibilité</h1>
-<p>Ces scénarios permettent de tester l'impact de changements sur la solution optimale.</p>
+
+<div class="page-header">
+    <h1>Scénarios d'analyse de sensibilité</h1>
+    <p class="subtitle">Ces scénarios permettent de tester l'impact de changements sur la solution optimale.</p>
+</div>
 
 <div class="scenarios-liste">
     {% for scenario in scenarios %}
     <div class="scenario-carte">
-        <div class="scenario-numero">Scénario {{ scenario.numero }}</div>
+        <span class="scenario-numero">Scénario {{ scenario.numero }}</span>
         <h2>{{ scenario.titre }}</h2>
         <p><strong>Description :</strong> {{ scenario.description }}</p>
         <p><strong>Impact attendu :</strong> {{ scenario.impact }}</p>
@@ -17,7 +20,7 @@
             <strong>Statut :</strong>
             <span class="statut statut-non-calcule">{{ scenario.statut }}</span>
         </p>
-        <button class="btn-scenario" disabled>Lancer ce scénario</button>
+        <button class="btn-scenario" disabled>▶ Lancer ce scénario</button>
     </div>
     {% endfor %}
 </div>

@@ -3,125 +3,142 @@
 {% block title %}Comparaison — Logistics Optimizer{% endblock %}
 
 {% block content %}
-<h1>Comparaison de scénarios</h1>
-<p>Analyse côte à côte de deux scénarios pour mesurer l'impact des changements.</p>
 
+<div class="page-header">
+    <h1>Comparaison de scénarios</h1>
+    <p class="subtitle">Analyse côte à côte de deux scénarios pour mesurer l'impact des changements.</p>
+</div>
+
+<!-- Entête comparaison -->
 <div class="comparaison-entete">
     <div class="comparaison-colonne entete-a">
         <div class="comparaison-nom">{{ scenario_a.nom }}</div>
-        <div class="comparaison-cout">{{ scenario_a.cout_total }} unités</div>
-        <div class="comparaison-statut statut-optimal">{{ scenario_a.statut }}</div>
+        <div class="comparaison-cout">{{ scenario_a.cout_total }} <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small></div>
+        <span class="statut statut-optimal">{{ scenario_a.statut }}</span>
     </div>
 
     <div class="comparaison-vs">VS</div>
 
     <div class="comparaison-colonne entete-b">
         <div class="comparaison-nom">{{ scenario_b.nom }}</div>
-        <div class="comparaison-cout">{{ scenario_b.cout_total }} unités</div>
-        <div class="comparaison-statut statut-optimal">{{ scenario_b.statut }}</div>
+        <div class="comparaison-cout">{{ scenario_b.cout_total }} <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small></div>
+        <span class="statut statut-optimal">{{ scenario_b.statut }}</span>
     </div>
 </div>
 
+<!-- Delta coût -->
 <div class="difference-bloc">
     <span class="difference-label">Différence de coût</span>
-    <span class="difference-valeur">+ {{ difference_cout }} unités</span>
+    <span class="difference-valeur">+{{ difference_cout }} unités</span>
     <span class="difference-detail">
-        soit + {% widthratio difference_cout scenario_a.cout_total 100 %}%
-        par rapport à la situation initiale
+        soit +{% widthratio difference_cout scenario_a.cout_total 100 %}% par rapport à la situation initiale
     </span>
 </div>
 
-<h2>Utilisation des centres</h2>
+<!-- Utilisation des centres -->
+<div class="section-heading">Utilisation des centres</div>
 <div class="comparaison-tableau">
     <div class="comparaison-colonne">
-        <table>
-            <tr>
-                <th>Centre</th>
-                <th>Charge</th>
-                <th>Utilisation</th>
-            </tr>
-            {% for ligne in scenario_a.utilisation %}
-            <tr>
-                <td>{{ ligne.centre }}</td>
-                <td>{{ ligne.charge }} / {{ ligne.capacite }}</td>
-                <td>
-                    {% if ligne.pourcentage >= 90 %}
-                    <span class="statut statut-infaisable">{{ ligne.pourcentage }}%</span>
-                    {% elif ligne.pourcentage >= 70 %}
-                    <span class="statut statut-moyen">{{ ligne.pourcentage }}%</span>
-                    {% else %}
-                    <span class="statut statut-optimal">{{ ligne.pourcentage }}%</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">{{ scenario_a.nom }}</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Centre</th><th>Charge</th><th>Utilisation</th></tr>
+                </thead>
+                <tbody>
+                    {% for ligne in scenario_a.utilisation %}
+                    <tr>
+                        <td><strong>{{ ligne.centre }}</strong></td>
+                        <td>{{ ligne.charge }} / {{ ligne.capacite }}</td>
+                        <td>
+                            {% if ligne.pourcentage >= 90 %}
+                            <span class="statut statut-infaisable">{{ ligne.pourcentage }}%</span>
+                            {% elif ligne.pourcentage >= 70 %}
+                            <span class="statut statut-moyen">{{ ligne.pourcentage }}%</span>
+                            {% else %}
+                            <span class="statut statut-optimal">{{ ligne.pourcentage }}%</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="comparaison-colonne">
-        <table>
-            <tr>
-                <th>Centre</th>
-                <th>Charge</th>
-                <th>Utilisation</th>
-            </tr>
-            {% for ligne in scenario_b.utilisation %}
-            <tr>
-                <td>{{ ligne.centre }}</td>
-                <td>{{ ligne.charge }} / {{ ligne.capacite }}</td>
-                <td>
-                    {% if ligne.pourcentage >= 90 %}
-                    <span class="statut statut-infaisable">{{ ligne.pourcentage }}%</span>
-                    {% elif ligne.pourcentage >= 70 %}
-                    <span class="statut statut-moyen">{{ ligne.pourcentage }}%</span>
-                    {% else %}
-                    <span class="statut statut-optimal">{{ ligne.pourcentage }}%</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light);">{{ scenario_b.nom }}</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Centre</th><th>Charge</th><th>Utilisation</th></tr>
+                </thead>
+                <tbody>
+                    {% for ligne in scenario_b.utilisation %}
+                    <tr>
+                        <td><strong>{{ ligne.centre }}</strong></td>
+                        <td>{{ ligne.charge }} / {{ ligne.capacite }}</td>
+                        <td>
+                            {% if ligne.pourcentage >= 90 %}
+                            <span class="statut statut-infaisable">{{ ligne.pourcentage }}%</span>
+                            {% elif ligne.pourcentage >= 70 %}
+                            <span class="statut statut-moyen">{{ ligne.pourcentage }}%</span>
+                            {% else %}
+                            <span class="statut statut-optimal">{{ ligne.pourcentage }}%</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<h2>Répartition des flux</h2>
+<!-- Répartition des flux -->
+<div class="section-heading">Répartition des flux</div>
 <div class="comparaison-tableau">
     <div class="comparaison-colonne">
-        <table>
-            <tr>
-                <th>Région</th>
-                <th>Centre</th>
-                <th>Requêtes</th>
-            </tr>
-            {% for ligne in scenario_a.flux %}
-            <tr>
-                <td>{{ ligne.region }}</td>
-                <td>{{ ligne.centre }}</td>
-                <td>{{ ligne.quantite }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">{{ scenario_a.nom }}</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr>
+                </thead>
+                <tbody>
+                    {% for ligne in scenario_a.flux %}
+                    <tr>
+                        <td><strong>{{ ligne.region }}</strong></td>
+                        <td>{{ ligne.centre }}</td>
+                        <td>{{ ligne.quantite }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="comparaison-colonne">
-        <table>
-            <tr>
-                <th>Région</th>
-                <th>Centre</th>
-                <th>Requêtes</th>
-            </tr>
-            {% for ligne in scenario_b.flux %}
-            <tr>
-                <td>{{ ligne.region }}</td>
-                <td>{{ ligne.centre }}</td>
-                <td>{{ ligne.quantite }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light);">{{ scenario_b.nom }}</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr>
+                </thead>
+                <tbody>
+                    {% for ligne in scenario_b.flux %}
+                    <tr>
+                        <td><strong>{{ ligne.region }}</strong></td>
+                        <td>{{ ligne.centre }}</td>
+                        <td>{{ ligne.quantite }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<br>
-<a href="{% url 'interface:scenarios' %}">Retour aux scénarios</a>
+<a href="{% url 'interface:scenarios' %}" class="back-link">← Retour aux scénarios</a>
 
 {% endblock %}

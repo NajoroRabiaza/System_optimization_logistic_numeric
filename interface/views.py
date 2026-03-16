@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render
 from django.conf import settings
 from .forms import DonneesForm
-from visualization.charts import generer_graphique_flux, generer_graphique_capacites
+from visualization.charts import generer_graphique_flux, generer_graphique_capacites, generer_graphique_cercles
 
 
 def index(request):
@@ -73,6 +73,11 @@ def resultats(request):
                 settings.BASE_DIR, 'static', 'graphique_capacites.png'
             )
             generer_graphique_capacites(utilisation, chemin_capacites)
+
+            chemin_cercles = os.path.join(
+                settings.BASE_DIR, 'static', 'graphique_cercles.png'
+            )
+            generer_graphique_cercles(utilisation, chemin_cercles)
 
             resultats_fictifs = {
                 'cout_total': 19400,

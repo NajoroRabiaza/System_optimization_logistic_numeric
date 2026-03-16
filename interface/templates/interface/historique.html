@@ -3,42 +3,74 @@
 {% block title %}Historique — Logistics Optimizer{% endblock %}
 
 {% block content %}
-<h1>Historique des calculs</h1>
-<p>Liste de tous les calculs effectués depuis le lancement de l'application.</p>
+
+<div class="actions-bar">
+    <div>
+        <h1>Historique des calculs</h1>
+        <p class="subtitle" style="color:var(--text-muted);font-size:.9rem;margin-top:4px;">
+            Liste de tous les calculs effectués depuis le lancement de l'application.
+        </p>
+    </div>
+</div>
 
 {% if historique %}
-<table>
-    <tr>
-        <th>N°</th>
-        <th>Nom du calcul</th>
-        <th>Date</th>
-        <th>Statut</th>
-        <th>Coût total</th>
-    </tr>
-    {% for calcul in historique %}
-    <tr>
-        <td>{{ calcul.numero }}</td>
-        <td>{{ calcul.nom }}</td>
-        <td>{{ calcul.date }}</td>
-        <td>
-            {% if calcul.statut == 'Optimal' %}
-            <span class="statut statut-optimal">{{ calcul.statut }}</span>
-            {% else %}
-            <span class="statut statut-infaisable">{{ calcul.statut }}</span>
-            {% endif %}
-        </td>
-        <td>
-            {% if calcul.cout_total %}
-            {{ calcul.cout_total }} unités
-            {% else %}
-            —
-            {% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="table-card">
+    <div class="table-card-header">
+        <div>
+            <div class="table-card-title">Tous les calculs</div>
+            <div class="table-card-sub">Total : {{ historique|length }} entrée{{ historique|length|pluralize }}</div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>N°</th>
+                    <th>Nom du calcul</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                    <th>Coût total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for calcul in historique %}
+                <tr>
+                    <td><strong>#{{ calcul.numero }}</strong></td>
+                    <td>{{ calcul.nom }}</td>
+                    <td style="color:var(--text-muted);font-size:.85rem;">{{ calcul.date }}</td>
+                    <td>
+                        {% if calcul.statut == 'Optimal' %}
+                        <span class="statut statut-optimal">✓ {{ calcul.statut }}</span>
+                        {% else %}
+                        <span class="statut statut-infaisable">✗ {{ calcul.statut }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if calcul.cout_total %}
+                        <strong>{{ calcul.cout_total }}</strong> <span style="color:var(--text-muted);font-size:.82rem;">unités</span>
+                        {% else %}
+                        <span style="color:var(--text-muted)">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% else %}
-<p>Aucun calcul effectué pour le moment.</p>
+<div class="card">
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <p>Aucun calcul effectué pour le moment.</p>
+        <br>
+        <a href="{% url 'interface:index' %}" class="btn btn-primary" style="display:inline-flex;">
+            → Lancer un premier calcul
+        </a>
+    </div>
+</div>
 {% endif %}
 
 {% endblock %}

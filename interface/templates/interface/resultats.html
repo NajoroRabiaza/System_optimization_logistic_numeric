@@ -4,92 +4,129 @@
 {% block title %}Résultats — Logistics Optimizer{% endblock %}
 
 {% block content %}
-<h1>Résultats de l'optimisation</h1>
 
+<div class="page-header">
+    <h1>Résultats de l'optimisation</h1>
+    <p class="subtitle">Solution calculée par le solveur PuLP.</p>
+</div>
+
+<!-- ── KPI cards ─────────────────────────────────── -->
 <div class="resultats-resume">
     <div class="resume-carte">
-        <div class="resume-label">Statut</div>
+        <div class="resume-label">Statut de la solution</div>
         <div class="resume-valeur statut-optimal">{{ resultats.statut }}</div>
     </div>
     <div class="resume-carte">
         <div class="resume-label">Coût total optimal</div>
-        <div class="resume-valeur">{{ resultats.cout_total }} unités</div>
+        <div class="resume-valeur">
+            {{ resultats.cout_total }}
+            <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small>
+        </div>
+    </div>
+</div>
+
+<!-- ── Répartition des flux ───────────────────────── -->
+<div class="section-heading">Répartition des flux</div>
+
+<div class="content-grid" style="grid-template-columns: 1fr 1.6fr; margin-bottom: 24px;">
+
+    <!-- Tableau flux -->
+    <div class="table-card" style="margin-bottom:0;">
+        <div class="table-card-header">
+            <div>
+                <div class="table-card-title">Affectation des flux</div>
+                <div class="table-card-sub">Par région et par centre</div>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Région</th>
+                        <th>Centre</th>
+                        <th>Requêtes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in resultats.flux %}
+                    <tr>
+                        <td><strong>{{ ligne.region }}</strong></td>
+                        <td>{{ ligne.centre }}</td>
+                        <td>{{ ligne.quantite }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Graphique flux -->
+    <div class="chart-card">
+        <img src="{% static 'graphique_flux.png' %}?{% now "U" %}"
+             alt="Graphique de répartition des flux"
+             class="chart-img">
+    </div>
+
+</div>
+
+<!-- ── Tableau récapitulatif des coûts ───────────── -->
+<div class="section-heading">Tableau récapitulatif des coûts</div>
+
+<div class="table-card" style="margin-bottom: 28px;">
+    <div class="table-card-header">
+        <div>
+            <div class="table-card-title">Détail du coût par flux</div>
+            <div class="table-card-sub">Coût unitaire × quantité traitée</div>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Région</th>
+                    <th>Centre</th>
+                    <th>Requêtes traitées</th>
+                    <th>Coût unitaire</th>
+                    <th>Coût total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ligne in resultats.tableau_couts %}
+                <tr>
+                    <td><strong>{{ ligne.region }}</strong></td>
+                    <td>{{ ligne.centre }}</td>
+                    <td>{{ ligne.quantite }}</td>
+                    <td>{{ ligne.cout_unitaire }}</td>
+                    <td><strong>{{ ligne.cout_total_ligne }}</strong></td>
+                </tr>
+                {% endfor %}
+                <tr class="ligne-total">
+                    <td colspan="4">Total général</td>
+                    <td><strong>{{ resultats.cout_total }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-<h2>Répartition des flux</h2>
-<table>
-    <tr>
-        <th>Région</th>
-        <th>Centre</th>
-        <th>Nombre de requêtes</th>
-    </tr>
-    {% for ligne in resultats.flux %}
-    <tr>
-        <td>{{ ligne.region }}</td>
-        <td>{{ ligne.centre }}</td>
-        <td>{{ ligne.quantite }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<!-- ── Utilisation des centres — jauges circulaires ─ -->
+<div class="section-heading">Utilisation des centres</div>
 
-<h2>Tableau récapitulatif des coûts</h2>
-<table>
-    <tr>
-        <th>Région</th>
-        <th>Centre</th>
-        <th>Requêtes traitées</th>
-        <th>Coût unitaire</th>
-        <th>Coût total</th>
-    </tr>
-    {% for ligne in resultats.tableau_couts %}
-    <tr>
-        <td>{{ ligne.region }}</td>
-        <td>{{ ligne.centre }}</td>
-        <td>{{ ligne.quantite }}</td>
-        <td>{{ ligne.cout_unitaire }}</td>
-        <td><strong>{{ ligne.cout_total_ligne }}</strong></td>
-    </tr>
-    {% endfor %}
-    <tr class="ligne-total">
-        <td colspan="4">Total général</td>
-        <td><strong>{{ resultats.cout_total }}</strong></td>
-    </tr>
-</table>
-
-<h2>Graphique de répartition des flux</h2>
-<div class="graphique-conteneur">
-    <img src="{% static 'graphique_flux.png' %}" alt="Graphique de répartition des flux">
+<div class="chart-card chart-card--tall" style="margin-bottom: 28px;">
+    <img src="{% static 'graphique_cercles.png' %}?{% now "U" %}"
+         alt="Jauges d'utilisation des centres"
+         class="chart-img">
 </div>
 
-<h2>Utilisation des centres</h2>
-<div class="utilisation-liste">
-    {% for ligne in resultats.utilisation %}
-    <div class="utilisation-bloc">
-        <div class="utilisation-header">
-            <span class="utilisation-nom">{{ ligne.centre }}</span>
-            <span class="utilisation-chiffres">{{ ligne.charge }} / {{ ligne.capacite }} requêtes</span>
-            <span class="utilisation-pct">{{ ligne.pourcentage }}%</span>
-        </div>
-        <div class="barre-fond">
-            {% if ligne.pourcentage >= 90 %}
-            <div class="barre-remplissage barre-rouge" style="width: {{ ligne.pourcentage }}%;"></div>
-            {% elif ligne.pourcentage >= 70 %}
-            <div class="barre-remplissage barre-orange" style="width: {{ ligne.pourcentage }}%;"></div>
-            {% else %}
-            <div class="barre-remplissage barre-verte" style="width: {{ ligne.pourcentage }}%;"></div>
-            {% endif %}
-        </div>
-    </div>
-    {% endfor %}
+<!-- ── Graphique capacités ────────────────────────── -->
+<div class="section-heading">Graphique d'utilisation des capacités</div>
+
+<div class="chart-card chart-card--tall" style="margin-bottom: 28px;">
+    <img src="{% static 'graphique_capacites.png' %}?{% now "U" %}"
+         alt="Graphique d'utilisation des capacités"
+         class="chart-img">
 </div>
 
-<h2>Graphique d'utilisation des capacités</h2>
-<div class="graphique-conteneur">
-    <img src="{% static 'graphique_capacites.png' %}" alt="Graphique d'utilisation des capacités">
-</div>
-
-<br>
-<a href="{% url 'interface:index' %}">Retour à l'accueil</a>
+<a href="{% url 'interface:index' %}" class="back-link">← Retour à l'accueil</a>
 
 {% endblock %}

@@ -3,115 +3,134 @@
 {% block title %}Accueil — Logistics Optimizer{% endblock %}
 
 {% block content %}
-<h1>Logistics Optimizer</h1>
-<p>Saisissez les données du problème puis lancez l'optimisation.</p>
+
+<div class="page-header">
+    <h1>Optimisation logistique</h1>
+    <p class="subtitle">Saisissez les données du problème puis lancez l'optimisation.</p>
+</div>
 
 {% if form.errors %}
-<p class="error-global">Le formulaire contient des erreurs. Veuillez les corriger.</p>
+<p class="error-global">
+    ⚠ Le formulaire contient des erreurs. Veuillez les corriger avant de soumettre.
+</p>
 {% endif %}
 
 <form method="post" action="{% url 'interface:resultats' %}">
     {% csrf_token %}
 
-    <h2>Demandes par région</h2>
-    <table>
-        <tr>
-            <th>R1</th>
-            <th>R2</th>
-            <th>R3</th>
-            <th>R4</th>
-        </tr>
-        <tr>
-            <td>
-                {{ form.demande_R1 }}
-                {% if form.demande_R1.errors %}
-                <div class="error">{{ form.demande_R1.errors }}</div>
-                {% endif %}
-            </td>
-            <td>
-                {{ form.demande_R2 }}
-                {% if form.demande_R2.errors %}
-                <div class="error">{{ form.demande_R2.errors }}</div>
-                {% endif %}
-            </td>
-            <td>
-                {{ form.demande_R3 }}
-                {% if form.demande_R3.errors %}
-                <div class="error">{{ form.demande_R3.errors }}</div>
-                {% endif %}
-            </td>
-            <td>
-                {{ form.demande_R4 }}
-                {% if form.demande_R4.errors %}
-                <div class="error">{{ form.demande_R4.errors }}</div>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <!-- Demandes -->
+    <div class="form-section">
+        <h2>Demandes par région</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Région 1 (R1)</th>
+                        <th>Région 2 (R2)</th>
+                        <th>Région 3 (R3)</th>
+                        <th>Région 4 (R4)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {{ form.demande_R1 }}
+                            {% if form.demande_R1.errors %}<div class="error">{{ form.demande_R1.errors }}</div>{% endif %}
+                        </td>
+                        <td>
+                            {{ form.demande_R2 }}
+                            {% if form.demande_R2.errors %}<div class="error">{{ form.demande_R2.errors }}</div>{% endif %}
+                        </td>
+                        <td>
+                            {{ form.demande_R3 }}
+                            {% if form.demande_R3.errors %}<div class="error">{{ form.demande_R3.errors }}</div>{% endif %}
+                        </td>
+                        <td>
+                            {{ form.demande_R4 }}
+                            {% if form.demande_R4.errors %}<div class="error">{{ form.demande_R4.errors }}</div>{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <h2>Capacités des centres</h2>
-    <table>
-        <tr>
-            <th>C1</th>
-            <th>C2</th>
-            <th>C3</th>
-        </tr>
-        <tr>
-            <td>
-                {{ form.capacite_C1 }}
-                {% if form.capacite_C1.errors %}
-                <div class="error">{{ form.capacite_C1.errors }}</div>
-                {% endif %}
-            </td>
-            <td>
-                {{ form.capacite_C2 }}
-                {% if form.capacite_C2.errors %}
-                <div class="error">{{ form.capacite_C2.errors }}</div>
-                {% endif %}
-            </td>
-            <td>
-                {{ form.capacite_C3 }}
-                {% if form.capacite_C3.errors %}
-                <div class="error">{{ form.capacite_C3.errors }}</div>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <!-- Capacités -->
+    <div class="form-section">
+        <h2>Capacités des centres de traitement</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Centre 1 (C1)</th>
+                        <th>Centre 2 (C2)</th>
+                        <th>Centre 3 (C3)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {{ form.capacite_C1 }}
+                            {% if form.capacite_C1.errors %}<div class="error">{{ form.capacite_C1.errors }}</div>{% endif %}
+                        </td>
+                        <td>
+                            {{ form.capacite_C2 }}
+                            {% if form.capacite_C2.errors %}<div class="error">{{ form.capacite_C2.errors }}</div>{% endif %}
+                        </td>
+                        <td>
+                            {{ form.capacite_C3 }}
+                            {% if form.capacite_C3.errors %}<div class="error">{{ form.capacite_C3.errors }}</div>{% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    <h2>Coûts unitaires de traitement</h2>
-    <table>
-        <tr>
-            <th></th>
-            <th>R1</th>
-            <th>R2</th>
-            <th>R3</th>
-            <th>R4</th>
-        </tr>
-        <tr>
-            <th>C1</th>
-            <td>{{ form.cout_C1_R1 }}{% if form.cout_C1_R1.errors %}<div class="error">{{ form.cout_C1_R1.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C1_R2 }}{% if form.cout_C1_R2.errors %}<div class="error">{{ form.cout_C1_R2.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C1_R3 }}{% if form.cout_C1_R3.errors %}<div class="error">{{ form.cout_C1_R3.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C1_R4 }}{% if form.cout_C1_R4.errors %}<div class="error">{{ form.cout_C1_R4.errors }}</div>{% endif %}</td>
-        </tr>
-        <tr>
-            <th>C2</th>
-            <td>{{ form.cout_C2_R1 }}{% if form.cout_C2_R1.errors %}<div class="error">{{ form.cout_C2_R1.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C2_R2 }}{% if form.cout_C2_R2.errors %}<div class="error">{{ form.cout_C2_R2.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C2_R3 }}{% if form.cout_C2_R3.errors %}<div class="error">{{ form.cout_C2_R3.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C2_R4 }}{% if form.cout_C2_R4.errors %}<div class="error">{{ form.cout_C2_R4.errors }}</div>{% endif %}</td>
-        </tr>
-        <tr>
-            <th>C3</th>
-            <td>{{ form.cout_C3_R1 }}{% if form.cout_C3_R1.errors %}<div class="error">{{ form.cout_C3_R1.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C3_R2 }}{% if form.cout_C3_R2.errors %}<div class="error">{{ form.cout_C3_R2.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C3_R3 }}{% if form.cout_C3_R3.errors %}<div class="error">{{ form.cout_C3_R3.errors }}</div>{% endif %}</td>
-            <td>{{ form.cout_C3_R4 }}{% if form.cout_C3_R4.errors %}<div class="error">{{ form.cout_C3_R4.errors }}</div>{% endif %}</td>
-        </tr>
-    </table>
+    <!-- Coûts unitaires -->
+    <div class="form-section">
+        <h2>Coûts unitaires de traitement</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Centre</th>
+                        <th>R1</th>
+                        <th>R2</th>
+                        <th>R3</th>
+                        <th>R4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>C1</strong></td>
+                        <td>{{ form.cout_C1_R1 }}{% if form.cout_C1_R1.errors %}<div class="error">{{ form.cout_C1_R1.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C1_R2 }}{% if form.cout_C1_R2.errors %}<div class="error">{{ form.cout_C1_R2.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C1_R3 }}{% if form.cout_C1_R3.errors %}<div class="error">{{ form.cout_C1_R3.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C1_R4 }}{% if form.cout_C1_R4.errors %}<div class="error">{{ form.cout_C1_R4.errors }}</div>{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>C2</strong></td>
+                        <td>{{ form.cout_C2_R1 }}{% if form.cout_C2_R1.errors %}<div class="error">{{ form.cout_C2_R1.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C2_R2 }}{% if form.cout_C2_R2.errors %}<div class="error">{{ form.cout_C2_R2.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C2_R3 }}{% if form.cout_C2_R3.errors %}<div class="error">{{ form.cout_C2_R3.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C2_R4 }}{% if form.cout_C2_R4.errors %}<div class="error">{{ form.cout_C2_R4.errors }}</div>{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>C3</strong></td>
+                        <td>{{ form.cout_C3_R1 }}{% if form.cout_C3_R1.errors %}<div class="error">{{ form.cout_C3_R1.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C3_R2 }}{% if form.cout_C3_R2.errors %}<div class="error">{{ form.cout_C3_R2.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C3_R3 }}{% if form.cout_C3_R3.errors %}<div class="error">{{ form.cout_C3_R3.errors }}</div>{% endif %}</td>
+                        <td>{{ form.cout_C3_R4 }}{% if form.cout_C3_R4.errors %}<div class="error">{{ form.cout_C3_R4.errors }}</div>{% endif %}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
+    <!-- Résumé automatique -->
     <div class="resume-saisie">
-        <h2>Résumé des données</h2>
+        <div class="section-heading">Résumé des données saisies</div>
         <div class="resume-saisie-grille">
             <div class="resume-saisie-bloc">
                 <div class="resume-saisie-titre">Demande totale</div>
@@ -131,59 +150,36 @@
         </div>
     </div>
 
-    <button type="submit">Lancer l'optimisation</button>
+    <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
+        <button type="submit" class="btn btn-primary">
+            ▶ Lancer l'optimisation
+        </button>
+    </div>
 
 </form>
+
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Champs de demande
-    const champsdemande = [
-        'id_demande_R1', 'id_demande_R2',
-        'id_demande_R3', 'id_demande_R4'
-    ];
-
-    // Champs de capacité
-    const champsCapacite = [
-        'id_capacite_C1', 'id_capacite_C2', 'id_capacite_C3'
-    ];
+    const champsdemande = ['id_demande_R1','id_demande_R2','id_demande_R3','id_demande_R4'];
+    const champsCapacite = ['id_capacite_C1','id_capacite_C2','id_capacite_C3'];
 
     function calculerResume() {
-        let demandeTotale = 0;
-        let capaciteTotale = 0;
-
-        champsdemande.forEach(function(id) {
-            const valeur = parseInt(document.getElementById(id).value) || 0;
-            demandeTotale += valeur;
-        });
-
-        champsCapacite.forEach(function(id) {
-            const valeur = parseInt(document.getElementById(id).value) || 0;
-            capaciteTotale += valeur;
-        });
-
+        let demandeTotale = 0, capaciteTotale = 0;
+        champsdemande.forEach(id => { demandeTotale += parseInt(document.getElementById(id)?.value) || 0; });
+        champsCapacite.forEach(id => { capaciteTotale += parseInt(document.getElementById(id)?.value) || 0; });
         const marge = capaciteTotale - demandeTotale;
-
-        document.getElementById('demande-totale').textContent = demandeTotale;
-        document.getElementById('capacite-totale').textContent = capaciteTotale;
-
-        const elementMarge = document.getElementById('marge');
-        elementMarge.textContent = marge;
-
-        if (marge < 0) {
-            elementMarge.style.color = '#e74c3c';
-        } else {
-            elementMarge.style.color = '#2ecc71';
-        }
+        document.getElementById('demande-totale').textContent = demandeTotale || '—';
+        document.getElementById('capacite-totale').textContent = capaciteTotale || '—';
+        const el = document.getElementById('marge');
+        el.textContent = (demandeTotale || capaciteTotale) ? marge : '—';
+        el.style.color = marge < 0 ? 'var(--danger)' : 'var(--ok)';
     }
 
-    // Calculer au chargement de la page
     calculerResume();
-
-    // Recalculer à chaque modification d'un champ
-    champsdemande.concat(champsCapacite).forEach(function(id) {
-        document.getElementById(id).addEventListener('input', calculerResume);
+    champsdemande.concat(champsCapacite).forEach(id => {
+        document.getElementById(id)?.addEventListener('input', calculerResume);
     });
 </script>
 {% endblock %}
