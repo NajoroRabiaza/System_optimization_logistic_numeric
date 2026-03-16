@@ -1025,41 +1025,44 @@
    [data-theme="dark"] .icon-sun  { opacity: 1; transform: scale(1) rotate(0deg); }
    [data-theme="dark"] .icon-moon { opacity: 0; transform: scale(.6) rotate(-90deg); }
    
-   /* ── Chart cards (conteneurs pour les PNG matplotlib) ── */
-   .chart-card {
-     background: var(--surface);
-     border-radius: var(--radius);
-     padding: 8px;
-     box-shadow: var(--shadow);
-     border: 1px solid var(--border);
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     overflow: hidden;
-     animation: fadeUp .35s ease both;
-   }
-   
-   .chart-card--tall {
-     padding: 12px 16px;
-     max-width: 820px;
-     margin-left: auto;
-     margin-right: auto;
-   }
-   
-   .chart-img {
-     width: 100%;
-     height: auto;
-     display: block;
-     border-radius: calc(var(--radius) - 4px);
-     max-height: 340px;
-     object-fit: scale-down;
-   }
-   
-   [data-theme="dark"] .chart-card {
-     /* Inverser les PNG blancs en dark mode avec un filtre subtil */
-     background: #1a2630;
-   }
-   
-   [data-theme="dark"] .chart-img {
-     filter: brightness(0.92) contrast(1.05);
-   }
+   /* ── Chart cards (Chart.js) ─────────────────────────────── */
+.chart-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  animation: fadeUp .35s ease both;
+}
+
+.chart-card canvas {
+  display: block;
+  width: 100% !important;
+}
+
+/* ── Rangée de jauges donuts ────────────────────────────── */
+.donut-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex-wrap: nowrap;
+}
+
+.donut-wrap {
+  flex: 0 0 auto;
+  width: 200px;
+  position: relative;
+}
+
+.donut-wrap canvas {
+  display: block;
+  width: 100% !important;
+}
+
+[data-theme="dark"] .chart-card {
+  background: var(--surface);
+}
