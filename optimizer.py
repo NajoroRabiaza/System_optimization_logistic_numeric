@@ -2,57 +2,57 @@
 #  optimizer.py — Couche optimisation
 #
 #  Résout le problème de programmation linéaire avec
-#  scipy.optimize.linprog (méthode du simplexe révisé).
+#  scipy.optimize.linprog (méthode HiGHS).
 #
-#  On importe les fonctions de model.py pour construire
-#  les matrices, puis on appelle le solveur scipy.
+#  EXTENSIONS AJOUTÉES (Jour 5-6) :
+#    - Extension A : prise en compte de la contrainte énergétique
+#    - Extension B : prise en compte de la contrainte de latence
 # =============================================================
 
 from scipy.optimize import linprog
 from model import construire_matrices_avec_extra
 
 
-def resoudre(demandes, capacites, couts, regions, centres,
-             centre_indisponible=None, interdire_C3_R4=False):
+def resoudre(
+    demandes, capacites, couts, regions, centres,
+    centre_indisponible=None,
+    interdire_C3_R4=False,
+    # ── Paramètres Extension A : énergie ──
+    activer_contrainte_energie=False,
+    energie=None,
+    emax=None,
+    # ── Paramètres Extension B : latence ──
+    activer_contrainte_latence=False,
+    latences=None,
+    latence_max=35,
+):
     """
     Résout le problème de transport et retourne la solution optimale.
-
-    Paramètres :
-      demandes           : dict {region: nb_requetes}
-      capacites          : dict {centre: capacite_max}
-      couts              : dict {centre: {region: cout_unitaire}}
-      regions            : liste ['R1', 'R2', 'R3', 'R4']
-      centres            : liste ['C1', 'C2', 'C3']
-      centre_indisponible: nom d'un centre à désactiver (ex: 'C2') ou None
-      interdire_C3_R4    : True si C3 ne peut pas traiter R4
-
-    Retourne un dict avec :
-      statut        : 'Optimal' ou 'Infaisable'
-      cout_total    : coût minimum trouvé (entier) ou None
-      flux          : liste de {region, centre, quantite}
-      utilisation   : liste de {centre, charge, capacite, pourcentage}
-      tableau_couts : liste de {region, centre, quantite, cout_unitaire, cout_total_ligne}
-      message_erreur: texte si infaisable, sinon None
+    Accepte maintenant des paramètres pour les contraintes avancées.
     """
-
     nb_centres = len(centres)
 
-    # ── 1. Construire les matrices du modèle ──────────────────
+    # ── 1. Construire les matrices ────────────────────────────
     matrices = construire_matrices_avec_extra(
         regions, centres, demandes, capacites, couts,
         centre_indisponible=centre_indisponible,
         interdire_C3_R4=interdire_C3_R4,
+        activer_contrainte_energie=activer_contrainte_energie,
+        energie=energie,
+        emax=emax,
+        activer_contrainte_latence=activer_contrainte_latence,
+        latences=latences,
+        latence_max=latence_max,
     )
 
-    c      = matrices['c']       # vecteur des coûts
-    A_ub   = matrices['A_ub']    # matrice des capacités (inégalités ≤)
-    b_ub   = matrices['b_ub']    # vecteur des capacités
-    A_eq   = matrices['A_eq']    # matrice des demandes (égalités =)
-    b_eq   = matrices['b_eq']    # vecteur des demandes
+    c      = matrices['c']
+    A_ub   = matrices['A_ub']
+    b_ub   = matrices['b_ub']
+    A_eq   = matrices['A_eq']
+    b_eq   = matrices['b_eq']
     bornes = matrices.get('bornes', [(0, None)] * matrices['nb_vars'])
 
-    # ── 2. Appeler le solveur scipy ───────────────────────────
-    # method='highs' est le plus fiable et le plus rapide
+    # ── 2. Appeler le solveur ─────────────────────────────────
     resultat = linprog(
         c,
         A_ub=A_ub, b_ub=b_ub,
@@ -61,7 +61,7 @@ def resoudre(demandes, capacites, couts, regions, centres,
         method='highs',
     )
 
-    # ── 3. Vérifier si une solution a été trouvée ─────────────
+    # ── 3. Vérifier si une solution existe ────────────────────
     if not resultat.success:
         return {
             'statut':        'Infaisable',
@@ -69,20 +69,18 @@ def resoudre(demandes, capacites, couts, regions, centres,
             'flux':          [],
             'utilisation':   [],
             'tableau_couts': [],
+            'energie_totale': None,
             'message_erreur': (
                 "Le solveur n'a pas trouvé de solution. "
-                "Vérifiez que la capacité totale est suffisante."
+                "Les contraintes sont peut-être trop restrictives."
             ),
         }
 
-    # ── 4. Extraire les valeurs des variables x[i][j] ─────────
-    x_sol = resultat.x  # tableau numpy des valeurs optimales
-
-    # Coût total optimal (on arrondit car le solveur peut donner 19400.0000001)
+    # ── 4. Extraire les valeurs optimales ─────────────────────
+    x_sol      = resultat.x
     cout_total = round(resultat.fun)
 
     # ── 5. Construire la liste des flux ───────────────────────
-    # Un flux = une affectation non nulle (region → centre, quantité)
     flux = []
     for i, region in enumerate(regions):
         for j, centre in enumerate(centres):
@@ -95,17 +93,15 @@ def resoudre(demandes, capacites, couts, regions, centres,
                     'quantite': quantite,
                 })
 
-    # ── 6. Calculer l'utilisation de chaque centre ────────────
+    # ── 6. Calculer l'utilisation des centres ─────────────────
     utilisation = []
     for j, centre in enumerate(centres):
-        # Charge = somme des requêtes envoyées à ce centre
         charge = sum(
             round(x_sol[i * nb_centres + j])
             for i in range(len(regions))
         )
         cap = capacites[centre]
         pourcentage = round(charge / cap * 100) if cap > 0 else 0
-
         utilisation.append({
             'centre':      centre,
             'charge':      charge,
@@ -113,7 +109,7 @@ def resoudre(demandes, capacites, couts, regions, centres,
             'pourcentage': pourcentage,
         })
 
-    # ── 7. Construire le tableau récapitulatif des coûts ──────
+    # ── 7. Tableau récapitulatif des coûts ────────────────────
     tableau_couts = []
     for ligne in flux:
         r  = ligne['region']
@@ -121,52 +117,59 @@ def resoudre(demandes, capacites, couts, regions, centres,
         q  = ligne['quantite']
         cu = couts[c_][r]
         tableau_couts.append({
-            'region':          r,
-            'centre':          c_,
-            'quantite':        q,
-            'cout_unitaire':   cu,
+            'region':           r,
+            'centre':           c_,
+            'quantite':         q,
+            'cout_unitaire':    cu,
             'cout_total_ligne': cu * q,
         })
 
+    # ── 8. EXTENSION A : Calculer l'énergie totale consommée ──
+    # On calcule l'énergie même si la contrainte n'est pas activée
+    # pour toujours l'afficher dans les résultats.
+    energie_totale = 0
+    if energie:
+        for ligne in flux:
+            energie_totale += energie[ligne['centre']] * ligne['quantite']
+    energie_totale = round(energie_totale, 1)
+
     return {
-        'statut':        'Optimal',
-        'cout_total':    cout_total,
-        'flux':          flux,
-        'utilisation':   utilisation,
-        'tableau_couts': tableau_couts,
+        'statut':         'Optimal',
+        'cout_total':     cout_total,
+        'flux':           flux,
+        'utilisation':    utilisation,
+        'tableau_couts':  tableau_couts,
+        'energie_totale': energie_totale,
+        'emax':           emax,
         'message_erreur': None,
     }
 
 
 def verifier_contraintes(solution, demandes, capacites, regions, centres):
     """
-    Vérifie automatiquement que la solution respecte toutes les contraintes.
-    Retourne une liste de messages (vide = tout est correct).
+    Vérifie que la solution respecte toutes les contraintes.
+    Retourne une liste de violations (vide = tout est correct).
     """
     violations = []
     flux = solution.get('flux', [])
 
-    # Construire un dictionnaire quantite[region][centre]
     quantites = {r: {c: 0 for c in centres} for r in regions}
     for ligne in flux:
         quantites[ligne['region']][ligne['centre']] = ligne['quantite']
 
-    # Vérifier les contraintes de demande
     for r in regions:
         total = sum(quantites[r][c] for c in centres)
-        if abs(total - demandes[r]) > 1:  # tolérance de 1 requête (arrondi)
+        if abs(total - demandes[r]) > 1:
             violations.append(
                 f"Demande non satisfaite pour {r} : "
                 f"{total} traité ≠ {demandes[r]} demandé."
             )
 
-    # Vérifier les contraintes de capacité
     for c in centres:
         total = sum(quantites[r][c] for r in regions)
-        if total > capacites[c] + 1:  # tolérance de 1
+        if total > capacites[c] + 1:
             violations.append(
-                f"Capacité dépassée pour {c} : "
-                f"{total} > {capacites[c]}."
+                f"Capacité dépassée pour {c} : {total} > {capacites[c]}."
             )
 
     return violations

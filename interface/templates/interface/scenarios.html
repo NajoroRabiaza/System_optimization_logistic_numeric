@@ -20,21 +20,99 @@
 </div>
 {% endif %}
 
+<!-- ── Scénarios classiques ──────────────────────────────── -->
+<div class="section-heading">Scénarios initiaux</div>
+
 <div class="scenarios-liste">
     {% for scenario in scenarios %}
+    {% if not scenario.extension %}
     <div class="scenario-carte">
         <span class="scenario-numero">Scénario {{ scenario.numero }}</span>
         <h2>{{ scenario.titre }}</h2>
         <p><strong>Description :</strong> {{ scenario.description }}</p>
         <p><strong>Impact attendu :</strong> {{ scenario.impact }}</p>
-
-        <!-- Bouton réel qui appelle lancer_scenario() -->
         <a href="{% url 'interface:lancer_scenario' scenario.numero %}"
            class="btn-scenario">
             ▶ Lancer ce scénario
         </a>
     </div>
+    {% endif %}
     {% endfor %}
+</div>
+
+<!-- ── Extensions Jour 5-6 ──────────────────────────────── -->
+<div class="section-heading" style="margin-top: 32px;">
+    Extensions avancées — Jour 5 &amp; 6
+    <span style="font-size:.8rem; font-weight:400; color:var(--text-muted); margin-left:10px;">
+        (Contraintes énergétiques, latence réseau, sauvegarde JSON)
+    </span>
+</div>
+
+<div class="scenarios-liste">
+    {% for scenario in scenarios %}
+    {% if scenario.extension %}
+    <div class="scenario-carte" style="border-left: 3px solid var(--primary);">
+        <span class="scenario-numero" style="background: var(--primary); color:#fff;">
+            Extension {{ scenario.numero }}
+        </span>
+        <h2>{{ scenario.titre }}</h2>
+        <p><strong>Description :</strong> {{ scenario.description }}</p>
+        <p><strong>Impact attendu :</strong> {{ scenario.impact }}</p>
+        <a href="{% url 'interface:lancer_scenario' scenario.numero %}"
+           class="btn-scenario">
+            ▶ Lancer ce scénario
+        </a>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+<!-- ── Extension C : Chargement JSON ──────────────────────── -->
+<div class="section-heading" style="margin-top: 32px;">
+    Extension C — Chargement d'un scénario JSON
+</div>
+
+{% if erreur_chargement %}
+<div class="error-global" style="margin-bottom: 16px;">
+    ⚠ {{ erreur_chargement }}
+</div>
+{% endif %}
+
+<div class="table-card" style="padding: 24px;">
+    <div class="table-card-title">Charger un fichier de scénario (.json)</div>
+    <div class="table-card-sub" style="margin-bottom: 16px;">
+        Vous pouvez recharger un scénario précédemment sauvegardé depuis la page Résultats.
+    </div>
+
+    <form method="post"
+          action="{% url 'interface:charger_json' %}"
+          enctype="multipart/form-data"
+          style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+        {% csrf_token %}
+
+        <input type="file"
+               name="fichier_json"
+               accept=".json"
+               required
+               style="
+                   padding: 8px 12px;
+                   border: 1.5px solid var(--border);
+                   border-radius: 8px;
+                   background: var(--bg);
+                   color: var(--text);
+                   font-size: .87rem;
+                   cursor: pointer;
+               ">
+
+        <button type="submit" class="btn btn-primary" style="padding: 9px 20px;">
+            Charger le scénario
+        </button>
+    </form>
+
+    <p style="font-size:.8rem; color:var(--text-muted); margin-top: 12px;">
+        Pour obtenir un fichier JSON : lancez un scénario, puis cliquez sur
+        <strong>"Sauvegarder en JSON"</strong> sur la page des résultats.
+    </p>
 </div>
 
 {% endblock %}

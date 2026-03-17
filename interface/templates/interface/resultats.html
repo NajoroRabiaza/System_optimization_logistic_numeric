@@ -86,6 +86,14 @@
 </div>
 {% endif %}
 
+<!-- Badge JSON importé -->
+{% if depuis_json %}
+<div style="background:#e8f5e9; border:1px solid #4caf50; border-radius:8px;
+     padding:10px 16px; margin-bottom:16px; font-size:.88rem; color:#2e7d32;">
+    📂 Ce résultat a été <strong>chargé depuis un fichier JSON</strong> sauvegardé.
+</div>
+{% endif %}
+
 <!-- ── KPI cards ──────────────────────────────────────────── -->
 <div class="resultats-resume">
     <div class="resume-carte">
@@ -99,6 +107,20 @@
             <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small>
         </div>
     </div>
+    {% if resultats.energie_totale is not None %}
+    <div class="resume-carte" style="border-left: 3px solid #f39c12;">
+        <div class="resume-label">⚡ Énergie consommée</div>
+        <div class="resume-valeur" style="color: {% if resultats.emax and resultats.energie_totale > resultats.emax %}var(--danger){% else %}#e67e22{% endif %};">
+            {{ resultats.energie_totale }}
+            <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)"> unités</small>
+        </div>
+        {% if resultats.emax %}
+        <div style="font-size:.78rem; color:var(--text-muted); margin-top:4px;">
+            Limite : {{ resultats.emax }} unités
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 
 <!-- ── Répartition des flux ───────────────────────────────── -->
@@ -215,8 +237,18 @@
 <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
     <a href="{% url 'interface:index' %}" class="back-link" style="margin:0;">← Retour à l'accueil</a>
     <a href="{% url 'interface:scenarios' %}" class="btn btn-primary" style="font-size:.87rem;padding:9px 18px;">▶ Scénarios</a>
-    <a href="{% url 'interface:historique' %}" class="btn btn-primary" style="background:var(--primary-dark,#2d6875);font-size:.87rem;padding:9px 18px;">📋 Historique</a>
+    <a href="{% url 'interface:historique' %}" class="btn btn-primary" style="background:var(--primary-dark,#2d6875);font-size:.87rem;padding:9px 18px;">Historique</a>
     <a href="{% url 'interface:comparaison' %}" class="btn btn-primary" style="background:#2c3e50;font-size:.87rem;padding:9px 18px;">⇄ Comparer</a>
+    {% if resultats.statut == 'Optimal' %}
+    <a href="{% url 'interface:sauvegarder_json' %}" class="btn btn-primary"
+       style="background:#8e44ad; font-size:.87rem; padding:9px 18px;">
+        Sauvegarder en JSON
+    </a>
+    <a href="{% url 'interface:exporter_csv' %}" class="btn btn-primary"
+       style="background:#27ae60; font-size:.87rem; padding:9px 18px;">
+        ⬇ Exporter CSV
+    </a>
+    {% endif %}
 </div>
 
 </div><!-- /pageContent -->
