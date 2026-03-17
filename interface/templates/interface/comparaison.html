@@ -1,4 +1,5 @@
 {% extends "interface/base.html" %}
+{% load static %}
 
 {% block title %}Comparaison — Logistics Optimizer{% endblock %}
 
@@ -6,40 +7,149 @@
 
 <div class="page-header">
     <h1>Comparaison de scénarios</h1>
-    <p class="subtitle">Analyse côte à côte de deux scénarios pour mesurer l'impact des changements.</p>
+    <p class="subtitle">Analyse côte à côte de deux calculs pour mesurer l'impact des changements.</p>
 </div>
 
-<!-- Entête comparaison -->
+<!-- ── Cas : pas assez de calculs ──────────────────────────── -->
+{% if pas_assez_de_donnees %}
+<div class="card" style="text-align:center; padding: 48px 24px;">
+    <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="56" height="56"
+             style="color:var(--text-muted); margin: 0 auto 16px;">
+            <path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>
+        </svg>
+
+        <p style="font-size:1rem; color:var(--text-muted); margin-bottom: 8px;">
+            Il faut au moins <strong>2 calculs</strong> dans l'historique pour comparer.
+        </p>
+        <p style="font-size:.87rem; color:var(--text-muted);">
+            Vous avez actuellement <strong>{{ nb_calculs }}</strong> calcul{{ nb_calculs|pluralize }}.
+        </p>
+        <br>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="{% url 'interface:index' %}" class="btn btn-primary">
+                → Lancer un calcul depuis l'accueil
+            </a>
+            <a href="{% url 'interface:scenarios' %}" class="btn btn-primary" style="background:var(--primary-dark);">
+                → Lancer un scénario
+            </a>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<!-- ── Sélecteur : choisir quels calculs comparer ──────────── -->
+{% if liste_historique|length > 2 %}
+<form method="get" action="{% url 'interface:comparaison' %}"
+      style="background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px;
+             padding: 16px 20px; margin-bottom: 24px; display:flex; gap:20px; align-items:center; flex-wrap:wrap;">
+    <span style="font-weight:600; font-size:.9rem;">Choisir les calculs à comparer :</span>
+
+    <label style="display:flex; align-items:center; gap:8px; font-size:.87rem;">
+        Calcul A :
+        <select name="a" style="padding:6px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+            {% for calcul in liste_historique %}
+            <option value="{{ calcul.numero }}" {% if calcul.numero == idx_a %}selected{% endif %}>
+                #{{ calcul.numero }} — {{ calcul.nom }}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <label style="display:flex; align-items:center; gap:8px; font-size:.87rem;">
+        Calcul B :
+        <select name="b" style="padding:6px 10px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text);">
+            {% for calcul in liste_historique %}
+            <option value="{{ calcul.numero }}" {% if calcul.numero == idx_b %}selected{% endif %}>
+                #{{ calcul.numero }} — {{ calcul.nom }}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+
+    <button type="submit" class="btn btn-primary" style="padding: 8px 18px;">
+        ⇄ Comparer
+    </button>
+</form>
+{% endif %}
+
+<!-- ── Entête côte à côte ──────────────────────────────────── -->
 <div class="comparaison-entete">
     <div class="comparaison-colonne entete-a">
         <div class="comparaison-nom">{{ scenario_a.nom }}</div>
-        <div class="comparaison-cout">{{ scenario_a.cout_total }} <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small></div>
-        <span class="statut statut-optimal">{{ scenario_a.statut }}</span>
+        <div class="comparaison-cout">
+            {% if scenario_a.cout_total %}
+            {{ scenario_a.cout_total }}
+            <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)"> unités</small>
+            {% else %}
+            <span style="color:var(--danger)">Infaisable</span>
+            {% endif %}
+        </div>
+        <span class="statut {% if scenario_a.statut == 'Optimal' %}statut-optimal{% else %}statut-infaisable{% endif %}">
+            {{ scenario_a.statut }}
+        </span>
+        <div style="font-size:.78rem; color:var(--text-muted); margin-top:6px;">{{ scenario_a.date }}</div>
     </div>
 
     <div class="comparaison-vs">VS</div>
 
     <div class="comparaison-colonne entete-b">
         <div class="comparaison-nom">{{ scenario_b.nom }}</div>
-        <div class="comparaison-cout">{{ scenario_b.cout_total }} <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)">unités</small></div>
-        <span class="statut statut-optimal">{{ scenario_b.statut }}</span>
+        <div class="comparaison-cout">
+            {% if scenario_b.cout_total %}
+            {{ scenario_b.cout_total }}
+            <small style="font-size:.85rem;font-weight:500;color:var(--text-muted)"> unités</small>
+            {% else %}
+            <span style="color:var(--danger)">Infaisable</span>
+            {% endif %}
+        </div>
+        <span class="statut {% if scenario_b.statut == 'Optimal' %}statut-optimal{% else %}statut-infaisable{% endif %}">
+            {{ scenario_b.statut }}
+        </span>
+        <div style="font-size:.78rem; color:var(--text-muted); margin-top:6px;">{{ scenario_b.date }}</div>
     </div>
 </div>
 
-<!-- Delta coût -->
+<!-- ── Delta coût ──────────────────────────────────────────── -->
+{% if difference_cout is not None %}
 <div class="difference-bloc">
-    <span class="difference-label">Différence de coût</span>
-    <span class="difference-valeur">+{{ difference_cout }} unités</span>
-    <span class="difference-detail">
-        soit +{% widthratio difference_cout scenario_a.cout_total 100 %}% par rapport à la situation initiale
+    <span class="difference-label">Différence de coût (B − A)</span>
+    <span class="difference-valeur" style="color: {% if difference_cout > 0 %}var(--danger){% elif difference_cout < 0 %}var(--ok, #27ae60){% else %}var(--text-muted){% endif %};">
+        {% if difference_cout > 0 %}+{% endif %}{{ difference_cout }} unités
     </span>
+    {% if scenario_a.cout_total %}
+    <span class="difference-detail">
+        {% if difference_cout > 0 %}
+        Augmentation de {% widthratio difference_cout scenario_a.cout_total 100 %}% par rapport au calcul A
+        {% elif difference_cout < 0 %}
+        Réduction par rapport au calcul A
+        {% else %}
+        Coûts identiques
+        {% endif %}
+    </span>
+    {% endif %}
 </div>
+{% endif %}
 
-<!-- Utilisation des centres -->
+<!-- ── Graphique de comparaison des coûts ─────────────────── -->
+{% if scenario_a.cout_total and scenario_b.cout_total %}
+<div class="section-heading">Comparaison visuelle des coûts</div>
+<div class="chart-card" style="margin-bottom: 28px;">
+    <canvas id="chartComparaison" style="max-height: 220px;"></canvas>
+</div>
+{% endif %}
+
+<!-- ── Utilisation des centres côte à côte ────────────────── -->
+{% if scenario_a.utilisation or scenario_b.utilisation %}
 <div class="section-heading">Utilisation des centres</div>
 <div class="comparaison-tableau">
+
+    <!-- Colonne A -->
     <div class="comparaison-colonne">
-        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">{{ scenario_a.nom }}</div>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">
+            {{ scenario_a.nom }}
+        </div>
+        {% if scenario_a.utilisation %}
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -64,10 +174,17 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <p style="color:var(--text-muted); font-size:.87rem;">Infaisable — pas de données.</p>
+        {% endif %}
     </div>
 
+    <!-- Colonne B -->
     <div class="comparaison-colonne">
-        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light);">{{ scenario_b.nom }}</div>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light, #5bb0c0);">
+            {{ scenario_b.nom }}
+        </div>
+        {% if scenario_b.utilisation %}
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -92,19 +209,27 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <p style="color:var(--text-muted); font-size:.87rem;">Infaisable — pas de données.</p>
+        {% endif %}
     </div>
-</div>
 
-<!-- Répartition des flux -->
+</div>
+{% endif %}
+
+<!-- ── Répartition des flux côte à côte ───────────────────── -->
+{% if scenario_a.flux or scenario_b.flux %}
 <div class="section-heading">Répartition des flux</div>
 <div class="comparaison-tableau">
+
     <div class="comparaison-colonne">
-        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">{{ scenario_a.nom }}</div>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary);">
+            {{ scenario_a.nom }}
+        </div>
+        {% if scenario_a.flux %}
         <div class="table-wrapper">
             <table>
-                <thead>
-                    <tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr>
-                </thead>
+                <thead><tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr></thead>
                 <tbody>
                     {% for ligne in scenario_a.flux %}
                     <tr>
@@ -116,15 +241,19 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <p style="color:var(--text-muted); font-size:.87rem;">—</p>
+        {% endif %}
     </div>
 
     <div class="comparaison-colonne">
-        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light);">{{ scenario_b.nom }}</div>
+        <div style="margin-bottom:10px;font-weight:700;font-size:.85rem;color:var(--primary-light, #5bb0c0);">
+            {{ scenario_b.nom }}
+        </div>
+        {% if scenario_b.flux %}
         <div class="table-wrapper">
             <table>
-                <thead>
-                    <tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr>
-                </thead>
+                <thead><tr><th>Région</th><th>Centre</th><th>Requêtes</th></tr></thead>
                 <tbody>
                     {% for ligne in scenario_b.flux %}
                     <tr>
@@ -136,9 +265,77 @@
                 </tbody>
             </table>
         </div>
+        {% else %}
+        <p style="color:var(--text-muted); font-size:.87rem;">—</p>
+        {% endif %}
     </div>
+
 </div>
+{% endif %}
 
-<a href="{% url 'interface:scenarios' %}" class="back-link">← Retour aux scénarios</a>
+{% endif %}{# fin du bloc "pas_assez_de_donnees" #}
 
+{% endblock %}
+
+{% block extra_js %}
+{% if not pas_assez_de_donnees and scenario_a.cout_total and scenario_b.cout_total %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+    const isDark  = localStorage.getItem('theme') === 'dark';
+    const TICK    = isDark ? '#8ba4b0' : '#6b7a8d';
+    const GRID    = isDark ? '#243340' : '#e8edf2';
+    const TEXT    = isDark ? '#e8f0f4' : '#1A1A1A';
+    const TT_BG   = isDark ? '#172028' : '#1e2a32';
+    const COL_A   = '#448A99';
+    const COL_B   = '#e67e22';
+
+    const nomA    = "{{ scenario_a.nom|escapejs }}";
+    const nomB    = "{{ scenario_b.nom|escapejs }}";
+    const coutA   = {{ scenario_a.cout_total }};
+    const coutB   = {{ scenario_b.cout_total }};
+
+    new Chart(document.getElementById('chartComparaison'), {
+        type : 'bar',
+        data : {
+            labels   : [nomA, nomB],
+            datasets : [{
+                label           : 'Coût total (unités)',
+                data            : [coutA, coutB],
+                backgroundColor : [COL_A, COL_B],
+                borderRadius    : 10,
+                borderSkipped   : false,
+                barPercentage   : 0.5,
+            }],
+        },
+        options : {
+            responsive          : true,
+            maintainAspectRatio : true,
+            aspectRatio         : 4,
+            plugins : {
+                legend : { display: false },
+                tooltip: {
+                    backgroundColor : TT_BG,
+                    titleColor      : '#e8f0f4',
+                    bodyColor       : '#8ba4b0',
+                    borderColor     : 'rgba(255,255,255,.07)',
+                    borderWidth     : 1,
+                    cornerRadius    : 10,
+                    padding         : 12,
+                    callbacks : {
+                        label : ctx => `  Coût : ${ctx.raw.toLocaleString()} unités`,
+                    },
+                },
+            },
+            scales : {
+                x : { grid: { display: false }, border: { display: false },
+                      ticks: { color: TICK, font: { size: 12, weight: '600' } } },
+                y : { grid: { color: GRID }, border: { dash: [5,5], display: false },
+                      ticks: { color: TICK } },
+            },
+        },
+    });
+}());
+</script>
+{% endif %}
 {% endblock %}

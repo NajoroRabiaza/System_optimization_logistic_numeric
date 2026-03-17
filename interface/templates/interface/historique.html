@@ -1,24 +1,56 @@
 {% extends "interface/base.html" %}
+{% load dict_extras %}
 
 {% block title %}Historique — Logistics Optimizer{% endblock %}
 
 {% block content %}
 
-<div class="actions-bar">
+<div class="actions-bar" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
     <div>
         <h1>Historique des calculs</h1>
         <p class="subtitle" style="color:var(--text-muted);font-size:.9rem;margin-top:4px;">
             Liste de tous les calculs effectués depuis le lancement de l'application.
         </p>
     </div>
+
+    <!-- Bouton vider l'historique -->
+    {% if historique %}
+    <form method="post" action="{% url 'interface:historique' %}"
+          onsubmit="return confirm('Vider tout l\'historique ?')">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="vider">
+        <button type="submit" class="btn" style="
+            background: transparent;
+            color: var(--danger, #e74c3c);
+            border: 1.5px solid var(--danger, #e74c3c);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: .85rem;
+            font-weight: 600;
+        ">
+            🗑 Vider l'historique
+        </button>
+    </form>
+    {% endif %}
 </div>
 
 {% if historique %}
+
+<!-- Bouton vers la comparaison -->
+{% if historique|length >= 2 %}
+<div style="margin-bottom: 18px;">
+    <a href="{% url 'interface:comparaison' %}" class="btn btn-primary" style="display:inline-flex; gap:8px; align-items:center;">
+        ⇄ Comparer le premier et le dernier calcul
+    </a>
+</div>
+{% endif %}
+
 <div class="table-card">
     <div class="table-card-header">
         <div>
             <div class="table-card-title">Tous les calculs</div>
-            <div class="table-card-sub">Total : {{ historique|length }} entrée{{ historique|length|pluralize }}</div>
+            <div class="table-card-sub">Total : {{ historique|length }} calcul{{ historique|length|pluralize }}</div>
         </div>
     </div>
     <div class="table-wrapper">
@@ -30,6 +62,7 @@
                     <th>Date</th>
                     <th>Statut</th>
                     <th>Coût total</th>
+                    <th>Comparer</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,10 +80,18 @@
                     </td>
                     <td>
                         {% if calcul.cout_total %}
-                        <strong>{{ calcul.cout_total }}</strong> <span style="color:var(--text-muted);font-size:.82rem;">unités</span>
+                        <strong>{{ calcul.cout_total }}</strong>
+                        <span style="color:var(--text-muted);font-size:.82rem;"> unités</span>
                         {% else %}
                         <span style="color:var(--text-muted)">—</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <!-- Lien pour utiliser ce calcul comme scénario A dans la comparaison -->
+                        <a href="{% url 'interface:comparaison' %}?a={{ calcul.numero }}&b={{ historique|last|get_item:'numero' }}"
+                           style="color:var(--primary);font-size:.82rem;text-decoration:none;">
+                            Comparer →
+                        </a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -58,10 +99,12 @@
         </table>
     </div>
 </div>
+
 {% else %}
+<!-- Aucun calcul -->
 <div class="card">
     <div class="empty-state">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         <p>Aucun calcul effectué pour le moment.</p>

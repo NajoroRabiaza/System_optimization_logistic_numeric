@@ -757,6 +757,7 @@
    
    .btn-scenario {
      margin-top: auto;
+     display: inline-block;
      background: var(--secondary);
      color: var(--primary);
      border: 1.5px solid var(--primary-light);
@@ -766,6 +767,12 @@
      font-size: .85rem;
      font-weight: 600;
      cursor: pointer;
+     text-decoration: none;
+     transition: background .2s, color .2s;
+   }
+   .btn-scenario:hover {
+     background: var(--primary);
+     color: #fff;
    }
    
    /* ── Error messages ─────────────────────────────────────── */

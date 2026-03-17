@@ -57,8 +57,34 @@
 
 <div class="page-header">
     <h1>Résultats de l'optimisation</h1>
-    <p class="subtitle">Solution calculée par le solveur PuLP.</p>
+    <p class="subtitle">
+        {% if nom_scenario %}
+            {{ nom_scenario }} — Solution calculée par scipy.optimize (HiGHS).
+        {% else %}
+            Solution calculée par scipy.optimize (HiGHS).
+        {% endif %}
+    </p>
 </div>
+
+<!-- Message si le problème est infaisable -->
+{% if resultats.statut == 'Infaisable' %}
+<div class="error-global" style="margin-bottom: 20px;">
+    ⚠ Le solveur n'a pas trouvé de solution optimale.
+    {% if resultats.message_erreur %} {{ resultats.message_erreur }} {% endif %}
+</div>
+{% endif %}
+
+<!-- Violations de contraintes (contrôle qualité) -->
+{% if violations %}
+<div class="error-global" style="background: #fff8e1; border-color: #f39c12; color: #7a5800; margin-bottom: 20px;">
+    ⚠ Attention — violations de contraintes détectées :
+    <ul style="margin: 8px 0 0 20px;">
+        {% for v in violations %}
+        <li>{{ v }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 
 <!-- ── KPI cards ──────────────────────────────────────────── -->
 <div class="resultats-resume">
@@ -186,7 +212,12 @@
     <canvas id="chartCapacites"></canvas>
 </div>
 
-<a href="{% url 'interface:index' %}" class="back-link">← Retour à l'accueil</a>
+<div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:16px;">
+    <a href="{% url 'interface:index' %}" class="back-link" style="margin:0;">← Retour à l'accueil</a>
+    <a href="{% url 'interface:scenarios' %}" class="btn btn-primary" style="font-size:.87rem;padding:9px 18px;">▶ Scénarios</a>
+    <a href="{% url 'interface:historique' %}" class="btn btn-primary" style="background:var(--primary-dark,#2d6875);font-size:.87rem;padding:9px 18px;">📋 Historique</a>
+    <a href="{% url 'interface:comparaison' %}" class="btn btn-primary" style="background:#2c3e50;font-size:.87rem;padding:9px 18px;">⇄ Comparer</a>
+</div>
 
 </div><!-- /pageContent -->
 
