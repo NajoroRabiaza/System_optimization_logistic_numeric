@@ -14,7 +14,7 @@ import numpy as np
 
 def construire_matrices(regions, centres, demandes, capacites, couts):
     """
-    Construit les matrices de base du problème LP.
+    Construit les matrices de base du problème LP(Linear programmin).
 
     Variables x[i][j] : requêtes de Ri vers Cj
     Index linéaire    : k = i * nb_centres + j
