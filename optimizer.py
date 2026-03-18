@@ -4,7 +4,7 @@
 #  Résout le problème de programmation linéaire avec
 #  scipy.optimize.linprog (méthode HiGHS).
 #
-#  EXTENSIONS AJOUTÉES (Jour 5-6) :
+#  extensions ajoutees :
 #    - Extension A : prise en compte de la contrainte énergétique
 #    - Extension B : prise en compte de la contrainte de latence
 # =============================================================

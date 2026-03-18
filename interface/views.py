@@ -1,7 +1,7 @@
 # =============================================================
 #  views.py — Couche IHM (vues Django)
 #
-#  EXTENSIONS AJOUTÉES (Jour 5-6) :
+#  extensions ajoutees :
 #    - Extension A : scénario avec contrainte énergétique
 #    - Extension B : scénario avec contrainte de latence
 #    - Extension C : sauvegarde et chargement de scénarios en JSON
@@ -110,18 +110,18 @@ def _liste_scenarios_predef():
          'impact': 'R4 va vers C1 ou C2 uniquement.',
          'extension': False},
         # ── Extensions jour 5-6 ──────────────────────────────
-        {'numero': 6, 'titre': '⚡ Extension A — Contrainte énergétique',
+        {'numero': 6, 'titre': 'Extension A — Contrainte énergétique',
          'description': 'La consommation totale d\'énergie est limitée à 7000 unités. '
                         'C1=2u/req, C2=1.5u/req, C3=2.5u/req.',
          'impact': 'Le solveur favorise C2 (moins énergivore). Le coût peut augmenter.',
          'extension': True},
-        {'numero': 7, 'titre': '📡 Extension B — Contrainte de latence (35ms max)',
+        {'numero': 7, 'titre': 'Extension B — Contrainte de latence (35ms max)',
          'description': 'Les flux dont la latence dépasse 35ms sont interdits. '
                         'Ex: R4→C1 (50ms) et R1→C3 (40ms) sont bloqués.',
          'impact': 'Certaines paires région-centre sont interdites. '
                    'La solution change et peut coûter plus cher.',
          'extension': True},
-        {'numero': 8, 'titre': '⚡📡 Extension A+B — Énergie ET Latence combinées',
+        {'numero': 8, 'titre': ' Extension A+B — Énergie ET Latence combinées',
          'description': 'Les deux contraintes sont actives en même temps.',
          'impact': 'Le problème est plus contraint. Le solveur doit satisfaire '
                    'les deux limitations simultanément.',

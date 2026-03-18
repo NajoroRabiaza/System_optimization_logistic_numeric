@@ -4,7 +4,7 @@
 #  Ce fichier traduit le problème logistique en matrices
 #  pour que scipy puisse le résoudre.
 #
-#  EXTENSIONS AJOUTÉES (Jour 5-6) :
+#  extensions ajoutees :
 #    - Extension A : contrainte énergétique (nouvelle ligne dans A_ub)
 #    - Extension B : contrainte de latence (bornes forcées à 0)
 # =============================================================

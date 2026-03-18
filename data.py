@@ -3,7 +3,7 @@
 #  Contient toutes les données initiales du problème logistique.
 #  On peut modifier ces valeurs sans toucher au reste du code.
 #
-#  EXTENSIONS AJOUTÉES (Jour 5-6) :
+#  extensions ajoutees :
 #    - ENERGIE     : consommation énergétique par requête par centre
 #    - EMAX        : limite globale d'énergie autorisée
 #    - LATENCES    : latence réseau entre chaque région et chaque centre
