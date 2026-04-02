@@ -133,7 +133,7 @@ def _liste_scenarios_predef():
 #  Vue 1 : Accueil
 # =============================================================
 
-@login_required
+# @login_required
 def index(request):
     donnees = get_donnees_initiales()
     form = DonneesForm(initial={
@@ -164,7 +164,7 @@ def index(request):
 #  Vue 2 : Résultats
 # =============================================================
 
-@login_required
+# @login_required
 def resultats(request):
     if request.method != 'POST':
         return redirect('interface:index')
@@ -214,7 +214,7 @@ def resultats(request):
 #  Vue 3 : Scénarios
 # =============================================================
 
-@login_required
+# @login_required
 def scenarios(request):
     return render(request, 'interface/scenarios.html', {
         'scenarios': _liste_scenarios_predef()
@@ -225,7 +225,7 @@ def scenarios(request):
 #  Vue 4 : Lancer un scénario
 # =============================================================
 
-@login_required
+# @login_required
 def lancer_scenario(request, numero):
     donnees = get_donnees_initiales()
     regions  = donnees['regions']
@@ -324,7 +324,7 @@ def lancer_scenario(request, numero):
 #  Vue 5 : Historique
 # =============================================================
 
-@login_required
+# @login_required
 def historique(request):
     if request.method == 'POST' and request.POST.get('action') == 'vider':
         request.session['historique'] = []
@@ -340,7 +340,7 @@ def historique(request):
 #  Vue 6 : Comparaison
 # =============================================================
 
-@login_required
+# @login_required
 def comparaison(request):
     liste = _lire_historique(request)
 
@@ -382,7 +382,7 @@ def comparaison(request):
 #  EXTENSION C : Sauvegarde et chargement JSON
 # =============================================================
 
-@login_required
+# @login_required
 def sauvegarder_scenario_json(request):
     """
     Sauvegarde le dernier calcul de l'historique en fichier JSON.
@@ -424,7 +424,7 @@ def sauvegarder_scenario_json(request):
     return response
 
 
-@login_required
+# @login_required
 def charger_scenario_json(request):
     """
     Charge un fichier JSON précédemment sauvegardé et l'ajoute à l'historique.
@@ -487,7 +487,7 @@ def charger_scenario_json(request):
         })
 
 
-@login_required
+# @login_required
 def exporter_csv(request):
     """
     Exporte le dernier calcul de l'historique en fichier CSV.
