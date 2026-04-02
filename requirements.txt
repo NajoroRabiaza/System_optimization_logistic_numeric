@@ -1,5 +1,6 @@
 Django>=4.2,<5.0
 matplotlib>=3.7
 numpy>=1.24
+scipy
 gunicorn
 whitenoise
